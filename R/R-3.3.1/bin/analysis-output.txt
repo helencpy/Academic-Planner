@@ -1,0 +1,11 @@
+
+Call:
+lm(formula = score ~ currentCGPA + interest + prediction + difficulty, 
+    data = input)
+
+Coefficients:
+(Intercept)  currentCGPA     interest   prediction  
+         10           NA           NA           NA  
+ difficulty  
+         NA  
+

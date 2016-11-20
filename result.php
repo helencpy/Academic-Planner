@@ -50,7 +50,6 @@ table {
 
 table, td, th {
    text-align: left;
-    padding: 5px;
 }
 
 td{
@@ -84,7 +83,7 @@ $(window).scroll(function() {
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                   <i>Faculty of Computer Science & Information Technology, University of Malaya</i>
+                    You are logged in as <em style="color:#AED6F1  ;"><?php echo $login_user;?>.</em> (<a href="logout.php" style="color:#AED6F1  ;">Logout?</a>)
                   <!-- &nbsp;&nbsp; -->
                    
                 </div>
@@ -102,11 +101,11 @@ $(window).scroll(function() {
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="index.html">
-                     <img src="assets/img/new.png" />
+                     <img src="assets/img/try.png" />
                 </a>
 
             </div>
-
+			<div class="center-block">
             <div class="left-div">
                 <div class="user-settings-wrapper">
                     <ul class="nav">
@@ -115,32 +114,14 @@ $(window).scroll(function() {
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
                                 <span class="glyphicon glyphicon-education" style="font-size: 25px;"></span>
                             </a>
-                            <div class="dropdown-menu dropdown-settings">
-                                <div class="media">
-                                    <a class="media-left" href="#">
-                                        <img src="assets/img/64-64.jpg" alt="" class="img-rounded" />
-                                    </a>
-                                    <div class="media-body">
-                                        <h4 class="media-heading"><?php echo $login_user;?> </h4>
-                                        <h5>
-										
-										</h5>
-
-                                    </div>
-                                </div>
-                                <hr />
-                                <h5><strong>Personal Bio : </strong></h5>
-                               <h5><?php echo $major;?></h5>
-                                <hr />
-                                <a href="#" class="btn btn-info btn-sm">Full Profile</a>&nbsp; <a href="login.html" class="btn btn-danger btn-sm">Logout</a>
-
-                            </div>
+                            
                         </li>
 
 
                     </ul>
                 </div>
             </div>
+			</div>
         </div>
     </div>
     <!-- LOGO HEADER END-->
@@ -150,10 +131,10 @@ $(window).scroll(function() {
                 <div class="col-md-12">
                     <div class="navbar-collapse collapse ">
                         <ul id="menu-top" class="nav navbar-nav navbar-right">
+						    <li><a class="menu-top-active" href="result.php"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</a></li>
                             <li><a href="course_info.php"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Courses</a></li>
-                            <li><a class="menu-top-active" href="result.php"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</a></li>
                             <li><a href="table.html"><i class="fa fa-calculator fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Planner</a></li>
-                            <li><a href="forms.html"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Recommendation</a></li>
+                            <li><a href="recommendation.php"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Recommendation</a></li>
                         </ul>
                     </div>
                 </div>
@@ -166,7 +147,7 @@ $(window).scroll(function() {
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h4 class="page-head-line"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Courses</h4>
+                    <h4 class="page-head-line"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</h4>
 
                 </div>
 
@@ -179,7 +160,6 @@ $(window).scroll(function() {
                         Previous Academic Result
                     </div>
                     <div class="panel-body">
-                        
 					<table>
 					<tr>
 					<th><p>Matric Number</p></th>

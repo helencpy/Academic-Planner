@@ -139,7 +139,7 @@ function majorselect(maj,second) {
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                   <i>Faculty of Computer Science & Information Technology, University of Malaya</i>
+                   You are logged in as <em style="color:#AED6F1  ;"><?php echo $login_user;?>.</em> (<a href="logout.php" style="color:#AED6F1  ;">Logout?</a>)
                   <!-- &nbsp;&nbsp; -->
                    
                 </div>
@@ -157,11 +157,11 @@ function majorselect(maj,second) {
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="index.html">
-                     <img src="assets/img/new.png" />
+                     <img src="assets/img/try.png" />
                 </a>
 
             </div>
-
+			
             <div class="left-div">
                 <div class="user-settings-wrapper">
                     <ul class="nav">
@@ -170,33 +170,14 @@ function majorselect(maj,second) {
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
                                 <span class="glyphicon glyphicon-education" style="font-size: 25px;"></span>
                             </a>
-                            <div class="dropdown-menu dropdown-settings">
-                                <div class="media">
-                                    <a class="media-left" href="#">
-                                        <img src="assets/img/64-64.jpg" alt="" class="img-rounded" />
-                                    </a>
-                                    <div class="media-body">
-                                        <h4 class="media-heading"><?php echo $login_user;?> </h4>
-                                        <h5>
-										
-										</h5>
-
-                                    </div>
-                                </div>
-                                <hr />
-                                <h5><strong>Personal Bio : </strong></h5>
-                               <h5><?php echo $major;?></h5>
-                                <hr />
-                                <a href="#" class="btn btn-info btn-sm">Full Profile</a>&nbsp; <a href="login.html" class="btn btn-danger btn-sm">Logout</a>
-
-                            </div>
+                   
                         </li>
 
 
                     </ul>
                 </div>
             </div>
-        </div>
+		</div>
     </div>
     <!-- LOGO HEADER END-->
     <section class="menu-section">
@@ -205,10 +186,10 @@ function majorselect(maj,second) {
                 <div class="col-md-12">
                     <div class="navbar-collapse collapse ">
                         <ul id="menu-top" class="nav navbar-nav navbar-right">
-                            <li><a class="menu-top-active" href="course_info.php"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbspCourses</a></li>
-							<li><a href="result.php"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</a></li>
+                            <li><a href="result.php"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</a></li>
+							<li><a class="menu-top-active" href="course_info.php"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbspCourses</a></li>
                             <li><a href="table.html"><i class="fa fa-calculator fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Planner</a></li>
-                            <li><a href="forms.html"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Recommendation</a></li>
+                            <li><a href="recommendation.php"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Recommendation</a></li>
                         </ul>
                     </div>
                 </div>
@@ -298,8 +279,26 @@ function majorselect(maj,second) {
 						</select><br>
                         <label>Course : </label><br>
                         <select class="selectpicker" name="course" data-live-search="true" data-size="10" data-width="50%">
-									<option data-hidden="true" value="null">Select course.</option>
 									<?php
+									if(isset($_POST['button_find']))
+											{
+												$course_code = mysqli_real_escape_string($db, $_POST['course']);
+												if($course_code=="null"||$course_code==null){
+													echo '<option data-hidden="true" value="null">Select course.</option>';
+												}
+												else{
+													$sql="SELECT * FROM courses where course_code like '$course_code'";
+													$result = mysqli_query($db,$sql);
+													$row=mysqli_fetch_array($result,MYSQLI_ASSOC);
+													
+													$courseName=$row['course_name'];												
+													echo "<option value=".$course_code.">".$course_code."\t\t". $courseName."</option>";
+												}
+										}
+									else{
+									echo '<option data-hidden="true" value="null">Select course.</option>';
+									}
+									
 									if(isset($_GET["session_selected"])&&isset($_GET["major_selected"]))
 									{
 										$sessi = $_GET['session_selected'];	
@@ -329,15 +328,11 @@ function majorselect(maj,second) {
 											<?php
 											if(isset($_POST['button_find']))
 											{
-												$course_code = mysqli_real_escape_string($db, $_POST['course']); 
+												
 												if(isset($course_code)) 
 												{
 								
-													$sql="SELECT * FROM courses where course_code like '$course_code'";
-													$result = mysqli_query($db,$sql);
-													$row=mysqli_fetch_array($result,MYSQLI_ASSOC);
 													
-													$courseName=$row['course_name'];
 													
                                             echo '<h4 class="modal-title" id="myModalLabel"><i class="fa fa-info-circle fa-lg" aria-hidden="true"></i><b>&nbsp&nbsp&nbsp'.$course_code.'</b> '.$courseName.'</h4>';
                                         echo '</div>';
@@ -389,10 +384,10 @@ function majorselect(maj,second) {
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                                         </div>
-                                    </div>
-                                </div>
+								</div>
                             </div>
-						
+                    </div>
+				</div>
                     </div>
 					</form>
                      <!--<div class="panel-footer text-muted">
