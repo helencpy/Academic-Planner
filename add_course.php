@@ -3,58 +3,73 @@
 	mysqli_query($db, "DELETE FROM `temp` WHERE username like '$login_user'");
 	unset($semester);
 	unset($session);
-	
-	$session1=$_SESSION['session1'];
-	$course1=$_SESSION['course1'];
-	
-	$getCourseInfo=mysqli_query($db,"select * from courses where course_code='$course1' AND session='$session1'");
-	$course_result=mysqli_fetch_array($getCourseInfo,MYSQLI_ASSOC);
-	
 		
 		if(isset($_POST['cancel'])){
 			header('location:admin_course.php');
 		}
 		
 		if(isset($_POST['submit']))
-		{
-
-			if(!is_numeric($_POST['credit'])){
+		{	
+	
+			if($_POST['session']=="null"){	
+				
 				echo '<script type="text/javascript">';
-				echo 'setTimeout(function (){swal({html:true,title: "Opps!", text:"You must enter a number for credit.",type: "warning"}, function(){window.location = "edit_course.php";})}, 50);';
+				echo 'setTimeout(function (){swal({html:true,title: "Opps!", text:"Please select session.",type: "warning"}, function(){window.location = "add_course.php";})}, 50);';
 				echo '</script>';
 			}
 			else{
-			$course_code=$_POST['course_code'];
-			$course_name=$_POST['course_name'];
-			$credit=$_POST['credit'];
-			$semester_available=$_POST['semester_available'];
-			$pre_requisite=$_POST['pre_requisite'];
-			$course_info=$_POST['course_info'];
-			$session=$_POST['session'];
-			
-
-			$query3=mysqli_query($db,"
-			update courses 
-			set 
-			course_code='$course_code', 
-			course_name='$course_name',
-			credit='$credit',
-			semester_available='$semester_available', 
-			pre_requisite='$pre_requisite',
-			course_info='$course_info',
-			session='$session'
-			where course_code='$course1' AND session='$session1'");
-			
-			if($query3)
-			{
-				echo '<script type="text/javascript">';
-				echo 'setTimeout(function (){swal({html:true,title: "Success!", text:"You have successfully updated.",type: "success"}, function(){window.location = "admin_course.php";})}, 50);';
-				echo '</script>';
-			}
-			}
+	
+					$course_code=$_POST['course_code'];
+					$session=$_POST['session'];
+					$sql="Select * from courses where course_code like '$course_code' AND session like '$session'";
+					$result=mysqli_query($db,$sql);
+					if (mysqli_num_rows($result) > 0){
+						
+						echo '<script type="text/javascript">';
+						echo 'setTimeout(function (){swal({html:true,title: "Opps!", text:"Course code already existed.",type: "warning"}, function(){window.location = "add_course.php";})}, 50);';
+						echo '</script>';
+						
+					}
+					else{
+						
+						$course_code=$_POST['course_code'];
+						$course_name=$_POST['course_name'];
+						$credit=$_POST['credit'];
+						$semester_available=$_POST['semester_available'];
+						$pre_requisite=$_POST['pre_requisite'];
+						$course_info=$_POST['course_info'];
+						$session=$_POST['session'];
+						
+						$query1=mysqli_query($db,"
+						INSERT INTO `courses`( 
+						`course_code`, 
+						`course_name`, 
+						`semester_available`, 
+						`pre_requisite`, 
+						`credit`, 
+						`course_info`,
+						`session`) 
+						VALUES (
+						'$course_code',
+						'$course_name',
+						'$semester_available',
+						'$pre_requisite',
+						'$credit',
+						'$course_info',
+						'$session')");
+						
+						
+						
+						if($query1)
+						{
+							echo '<script type="text/javascript">';
+							echo 'setTimeout(function (){swal({html:true,title: "Success!", text:"Course added.",type: "success"}, function(){window.location = "admin_course.php";})}, 50);';
+							echo '</script>';
+						}
+					}
+				}
+	
 		}
-	
-	
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -127,7 +142,6 @@ $(document).ready(function(){
 $(window).scroll(function() {
   sessionStorage.scrollTop = $(this).scrollTop();
 });
-
 
 </script>
 </head>
@@ -208,96 +222,80 @@ $(window).scroll(function() {
                       <div class="Compose-Message">               
                 <div class="panel panel-info">
                     <div class="panel-heading">
-                        <a href="admin_course.php">Course Information</a>&nbsp>&nbsp Edit Course Information
+                        <a href="admin_course.php">Course Information</a>&nbsp>&nbsp Add Course 
                     </div>
                     <div class="panel-body">
-                        <form method="post">
-                        
-						
-						<label>Course Code : </label><br>
-						<input type="text" class="form-control" name="course_code" required style="width:15em" value="<?php echo $course_result['course_code']; ?>" />
-						
-						<label>Course Name : </label><br>
-						<input type="text" class="form-control" name="course_name" required style="width:25em" value="<?php echo $course_result['course_name']; ?>" />
-						
-						<label>Session : </label><br>
-						<select class="selectpicker" name="session" required>
-							<option data-hidden="true" value="<?php echo $course_result['session']; ?>"><?php echo $course_result['session']; ?></option>								
-								<?php
+                       <form method="post" action="">
+					   
+					<label>Course Code : </label><br>
+					<input type="text" class="form-control" id="course_code" name="course_code" required style="width:15em" placeholder="Please enter course code." value="<?php if(isset($_POST['course_code'])) echo $_POST['course_code'];?>"/>
+					
+					<label>Course Name : </label><br> 
+					<input type="text" class="form-control" id="course_name" name="course_name" required style="width:25em" placeholder="Please enter course name." value="<?php if(isset($_POST['course_name'])) echo $_POST['course_name'];?>"/>
+					
+					<label>Session : </label><br>
+					<select class="selectpicker" name="session" required>
+					
+							<?php
+							if(isset($_POST['session'])){
+								$s=$_POST['session'];
+								echo '<option data-hidden="true" value='.$s.'>'.$s.'</option>';
+							}
+							else{
+							echo '<option data-hidden="true" value="null">Choose session.</option>';	
+							}							
+								
 								$result = mysqli_query($db, "SELECT * FROM t_session");
 										while($getSessionArray = mysqli_fetch_array($result))
 										{
 											echo "<option value={$getSessionArray['session']}>{$getSessionArray['session']}</option>";
 										}
-								?>	
-						</select><br>
-						
-						<label>Credit : </label><br>
-						<select class="selectpicker" name="credit" required><br>
-							<option data-hidden="true" value="<?php echo $course_result['credit']; ?>"><?php echo $course_result['credit']; ?></option>							
+								?>
+							
+					</select><br>
+					
+					<label>Credit : </label><br>
+					<select class="selectpicker" name="credit" required><br>
+							<option data-hidden="true" value="null">Choose credit.</option>
+							
 								<option value="1" >1</option>
 								<option value="2" >2</option>
 								<option value="3" >3</option>
 								<option value="4" >4</option>
 								<option value="5" >5</option>
-								<option value="6" >6</option>		
-						</select><br>
-						
-						<label>Semester Available : </label><br>
-						<select class="selectpicker" name="semester_available" required><br>
-							<option data-hidden="true" value="<?php echo $course_result['semester_available']; ?>"><?php echo $course_result['semester_available']; ?></option>							
+								<option value="5" >6</option>
+							
+					</select><br>
+					
+					<label>Semester Available : </label><br>
+					<select class="selectpicker" name="semester_available" required><br>
+							<option data-hidden="true" value="null">Choose semester available.</option>	
 								<option value="1" >1</option>
 								<option value="2" >2</option>
 								<option value="3" >3</option>
-								<option value="1 and 2" >1 and 2</option>	
-						</select><br>
-						
-						<label>Pre-requisite		:</label><br>
-						<select class="selectpicker" name="pre_requisite" data-size="10" data-live-search="true" data-width="40%">	
+								<option value="1 and 2" >1 and 2</option>
+							
+					</select><br>
+					
+					<label>Pre-requisite : </label><br>
+					<select class="selectpicker" name="pre_requisite" data-size="10" data-live-search="true" data-width="75%">
+									<option data-hidden="true" value=null>Select Pre-requisite.</option>
 									<?php
-									if ($course_result['pre_requisite']=="null"||$course_result['pre_requisite']=="NULL"||$course_result['pre_requisite']==NULL){
-										echo '<option data-hidden="true" value="null">Select Pre-requisite.</option>';
-									}
-									else{
-										echo '<option data-hidden="true" value=pre_requisite>'.$course_result['pre_requisite'].'</option>';
-									}
-									
 										$result = mysqli_query($db, "SELECT * FROM courses");
 										while($getCourseArray = mysqli_fetch_array($result))
 										{
 											echo "<option value={$getCourseArray['course_code']}>{$getCourseArray['course_code']}\t\t{$getCourseArray['course_name']}</option>";
 										}
 									?>
-						</select><br>
-						
-						<label>Course Information		:</label><br>
-						<textarea class="form-control" rows="5" name="course_info"><?php echo $course_result['course_info']; ?></textarea><br>
-						
-					<!--	<label>Elective		:</label><br>
-						<select class="selectpicker" name="elective" data-size="10" data-live-search="true" data-width="40%">	
-									// <?php
-									// if ($course_result['elective_id']==0){
-										// echo '<option data-hidden="true" value=0>Not an elective</option>';
-									// }
-									// else{
-										// $m_id=$course_result['major_id'];
-										// $sql = mysqli_query($db, "SELECT * FROM t_major where major_id= '$m_id'");
-										// $row=mysqli_fetch_array($sql,MYSQLI_ASSOC);
-										// echo '<option data-hidden="true" value=pre_requisite>'.$row['major'].'</option>';
-									// }
-									
-										// $result = mysqli_query($db, "SELECT * FROM t_major");
-										// while($getMajorArray = mysqli_fetch_array($result))
-										// {
-											// echo "<option value={$getMajorArray['major_id']}>{$getMajorArray['major']}</option>";
-										// }
-									// ?>
-						</select><br><br> -->
-						
-						<button class="btn btn-success" type="submit" name="submit" value="update"><i class="fa fa-floppy-o" aria-hidden="true"></i>&nbsp Save</button>
-						<button class="btn btn-default" type="cancel" name="cancel" value="cancel" formnovalidate>Cancel</button>
-						
-						</form>
+					</select>><br>
+					
+					<label>Course Information : </label><br>
+					<textarea class="form-control" rows="5" name="course_info"><?php if(isset($_POST['course_info'])) echo $_POST['course_info'];?></textarea><br>
+					
+
+					<button class="btn btn-success" type="submit" name="submit" value="submit"><i class="fa fa-floppy-o" aria-hidden="true"></i>&nbsp Save</button>
+					<button class="btn btn-default" type="submit" name="cancel" value="Cancel" formnovalidate>Cancel</button>
+				</form>
                      <!--<div class="panel-footer text-muted">
                         <strong>Note : </strong>Please note that we track all messages so don't send any spams.
                     </div> -->

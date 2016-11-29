@@ -12,5 +12,5 @@ $major=$row['major'];
 $cgpa=$row['cgpa'];
 if(!isset($user_check))
 {
-header("Location: index.php");
+header("Location: home.php");
 }

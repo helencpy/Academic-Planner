@@ -32,17 +32,40 @@
     <script src="sweetalert-master/dist/sweetalert.min.js"></script> 
 	<link rel="stylesheet" type="text/css" href="sweetalert-master/dist/sweetalert.css"/>
 
+	<script>
+function validateForm() {
+    var x = document.forms["myForm"]["username"].value;
+	var y = document.forms["myForm"]["password"].value;
+    if (x == ""||y=="") {
+       setTimeout(function (){swal({html:true,title: "Opps!", text:"Please fill in username and password.",type: "warning"}, function(){window.location = "home.html";})}, 100);
+        return false;
+    }
+}
+
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+	if (sessionStorage.scrollTop != "undefined") {
+		$(window).scrollTop(sessionStorage.scrollTop);
+	}
+});
+
+$(window).scroll(function() {
+  sessionStorage.scrollTop = $(this).scrollTop();
+});
+</script>
+	
 </head>
 <body>
     <header>
         <div class="container">
             <div class="row">
                
-                <form method="post" action="login.php">
+			  
+               <form name="myForm" method="post" action="login.php" onsubmit="return validateForm()">
 					
-						<input type="text" name="username" placeholder="Username"/>
+						<input type="text" name="username" placeholder="Username" style="color: #000000;"/>
 					
-						<input type="password" name="password" placeholder="Password"/>
+						<input type="password" name="password" placeholder="Password" style="color: #000000;"/>
 							
 						<button class="btn btn-info" type="submit" name="submit" value="Login"><span class="glyphicon glyphicon-user"></span> &nbsp;Log Me In</button>
 					
@@ -74,7 +97,7 @@
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
                                 <span class="glyphicon glyphicon-education" style="font-size: 25px;"></span>
                             </a>
-                        
+                           
                         </li>
 
 
@@ -90,7 +113,8 @@
                 <div class="col-md-12">
                     <div class="navbar-collapse collapse ">
                         <ul id="menu-top" class="nav navbar-nav navbar-right">
-                            <li><a class="menu-top-active" href="#about"><i class="fa fa-home fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp About</a></li>
+						<li><a class="menu-top-active" href="#about"><i class="fa fa-home fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Home</a></li>
+						
                         </ul>
                     </div>
                 </div>

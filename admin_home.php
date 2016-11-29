@@ -1,12 +1,8 @@
 <?php
-session_start();
-if(session_destroy())
-{
-echo '<script type="text/javascript">';
-echo 'setTimeout(function (){swal({html:true,title: "Success!", text:"You have successfully logged out.",type: "success"}, function(){window.location = "home.html";})}, 50);';
-echo '</script>';
-}
- 
+	include("check.php");
+	mysqli_query($db, "DELETE FROM `temp` WHERE username like '$login_user'");
+	unset($semester);
+	unset($session);
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -47,7 +43,7 @@ function validateForm() {
     var x = document.forms["myForm"]["username"].value;
 	var y = document.forms["myForm"]["password"].value;
     if (x == ""||y=="") {
-       setTimeout(function (){swal({html:true,title: "Opps!", text:"Please fill in username and password.",type: "warning"}, function(){window.location = "home.html";})}, 100);
+       setTimeout(function (){swal({html:true,title: "Opps!", text:"Please fill in username and password.",type: "warning"}, function(){window.location = "home.php";})}, 100);
         return false;
     }
 }
@@ -70,16 +66,26 @@ $(window).scroll(function() {
         <div class="container">
             <div class="row">
                
-			  
-               <form name="myForm" method="post" action="login.php" onsubmit="return validateForm()">
+			   <?php 
+			   if(!isset($login_user)){
+                echo '<form name="myForm" method="post" action="login.php" onsubmit="return validateForm()">';
 					
-						<input type="text" name="username" placeholder="Username" style="color: #000000;"/>
+						echo '<input type="text" name="username" placeholder="Username" style="color: #000000;"/>';
 					
-						<input type="password" name="password" placeholder="Password" style="color: #000000;"/>
+						echo '<input type="password" name="password" placeholder="Password" style="color: #000000;"/>';
 							
-						<button class="btn btn-info" type="submit" name="submit" value="Login"><span class="glyphicon glyphicon-user"></span> &nbsp;Log Me In</button>
+						echo '<button class="btn btn-info" type="submit" name="submit" value="Login"><span class="glyphicon glyphicon-user"></span> &nbsp;Log Me In</button>';
 					
-				</form>
+				echo '</form>';
+			   }
+			   else{
+				   echo '<div class="col-md-12">';
+                   echo 'You are logged in as <em style="color:#AED6F1  ;">'.$login_user.'</em> (<a href="logout.php" style="color:#AED6F1  ;">Logout?</a>)';
+                 
+                   
+                echo '</div>';
+			   }
+			   ?>
 				
             </div>      
         </div>         
@@ -123,8 +129,11 @@ $(window).scroll(function() {
                 <div class="col-md-12">
                     <div class="navbar-collapse collapse ">
                         <ul id="menu-top" class="nav navbar-nav navbar-right">
-						<li><a class="menu-top-active" href="#about"><i class="fa fa-home fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Home</a></li>
-						
+
+							<li><a class="menu-top-active" href="admin_home.php"><i class="fa fa-home fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Home</a></li>
+							<li><a href="admin_course.php"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Courses</a></li>
+                            <li><a href="result.php"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</a></li>
+
                         </ul>
                     </div>
                 </div>
