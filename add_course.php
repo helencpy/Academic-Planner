@@ -39,6 +39,15 @@
 						$pre_requisite=$_POST['pre_requisite'];
 						$course_info=$_POST['course_info'];
 						$session=$_POST['session'];
+						$elective=$_POST['elective'];
+						$category=$_POST['category'];
+						
+						if($elective>0){
+						
+								$sql = mysqli_query($db,"INSERT INTO t_elective (course_code, major_id,category) 
+										VALUES ('$course_code','$elective','$category')");
+				
+						}
 						
 						$query1=mysqli_query($db,"
 						INSERT INTO `courses`( 
@@ -48,7 +57,8 @@
 						`pre_requisite`, 
 						`credit`, 
 						`course_info`,
-						`session`) 
+						`session`,
+						`category`) 
 						VALUES (
 						'$course_code',
 						'$course_name',
@@ -56,16 +66,16 @@
 						'$pre_requisite',
 						'$credit',
 						'$course_info',
-						'$session')");
+						'$session',
+						'$category')");
 						
 						
 						
-						if($query1)
-						{
+
 							echo '<script type="text/javascript">';
 							echo 'setTimeout(function (){swal({html:true,title: "Success!", text:"Course added.",type: "success"}, function(){window.location = "admin_course.php";})}, 50);';
 							echo '</script>';
-						}
+						
 					}
 				}
 	
@@ -287,7 +297,40 @@ $(window).scroll(function() {
 											echo "<option value={$getCourseArray['course_code']}>{$getCourseArray['course_code']}\t\t{$getCourseArray['course_name']}</option>";
 										}
 									?>
-					</select>><br>
+					</select><br>
+					
+					<label>Elective		:</label><br>
+						<select class="selectpicker" name="elective" data-size="10" data-live-search="true" data-width="40%">	
+									<?php
+
+										echo '<option data-hidden="true" value="null">Not an elective.</option>';
+
+										$major_name=$getElectiveResult['major'];
+										$major_id=$getElectiveResult['major_id'];
+										echo '<option data-hidden="true" value="'.$major_id.'">'.$major_name.'</option>';
+									
+									$result = mysqli_query($db, "SELECT * FROM t_major");									
+									while($getMajorArray = mysqli_fetch_array($result))
+									{
+										echo "<option value={$getMajorArray['major_id']}>{$getMajorArray['major']}</option>";
+									}
+										echo "<option value=0}>Not an elective.</option>";
+									?>
+						</select><br>
+						
+						<label>Category		:</label><br>
+						<select class="selectpicker" name="category" data-size="10" data-live-search="true" data-width="40%">	
+									<?php
+									
+									echo '<option data-hidden="true" value="null">Select Category.</option>';
+									
+										$result = mysqli_query($db, "SELECT * FROM `t_elective_ctg`");
+										while($getCategoryArray = mysqli_fetch_array($result))
+										{
+											echo "<option value={$getCategoryArray['id']}>{$getCategoryArray['category']}</option>";
+										}
+									?>
+						</select><br>
 					
 					<label>Course Information : </label><br>
 					<textarea class="form-control" rows="5" name="course_info"><?php if(isset($_POST['course_info'])) echo $_POST['course_info'];?></textarea><br>

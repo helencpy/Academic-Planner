@@ -6,52 +6,92 @@
 	
 	if(isset($_POST['button_upload'])){
 		
-			$s_u=$_POST['session_upload'];
-			$file = $_FILES['file']['tmp_name'];
-			$handle = fopen($file, "r");
-			$c = 0;
-			while(($filesop = fgetcsv($handle, 1000, ",")) !== false)
-			{
-			$course_code = $filesop[0];
-			$course_name = $filesop[1];
-			$semester_available = $filesop[2];
-			$pre_requisite = $filesop[3];
-			$credit = $filesop[4];
-			$course_info = $filesop[5];
-			$session =$s_u;
+			if($_POST['session_upload']=="null"){
+				echo '<script type="text/javascript">';
+				echo 'setTimeout(function (){swal({html:true,title: "Opps!", text:"Please select session.",type: "warning"}, function(){window.location = "admin_course.php";})}, 100);';
+				echo '</script>';
+			}
+			else{
+		
+				$s_u=$_POST['session_upload'];
+				$file = $_FILES['file']['tmp_name'];
+				
+				if($file!=null){
+				
+					$handle = fopen($file, "r");
+					$c = 0;
+					while(($filesop = fgetcsv($handle, 1000, ",")) !== false)
+					{
+						if($c!=0){
+							$course_code = $filesop[0];
+							$course_name = $filesop[1];
+							$semester_available = $filesop[2];
+							$pre_requisite = $filesop[3];
+							$credit = $filesop[4];
+							$course_info = $filesop[5];
+							$session =$s_u;
 
-			$sql = mysqli_query($db,"INSERT INTO courses (course_code, course_name,semester_available,pre_requisite,credit,course_info,session) 
-			VALUES ('$course_code','$course_name','$semester_available','$pre_requisite','$credit','$course_info','$session')");
-			$c = $c + 1;
+							$sql = mysqli_query($db,"INSERT INTO courses (course_code, course_name,semester_available,pre_requisite,credit,course_info,session) 
+							VALUES ('$course_code','$course_name','$semester_available','$pre_requisite','$credit','$course_info','$session')");
+						}
+						$c = $c + 1;
+					}
+
+					if($sql){
+						
+						echo '<script type="text/javascript">';
+						echo 'setTimeout(function (){swal({html:true,title: "Success!", text:"You database has imported successfully. You have inserted the records",type: "success"}, function(){window.location = "admin_course.php";})}, 50);';
+						echo '</script>';
+					
+					}else{
+					
+					echo '<script type="text/javascript">';
+						echo 'setTimeout(function (){swal({html:true,title: "Sorry!", text:"There is some problem.",type: "warning"}, function(){window.location = "admin_course.php";})}, 50);';
+						echo '</script>';
+					
+					} 
+				}
+				else{
+					echo '<script type="text/javascript">';
+						echo 'setTimeout(function (){swal({html:true,title: "Opps!", text:"Please upload a file.",type: "warning"}, function(){window.location = "admin_course.php";})}, 50);';
+						echo '</script>';
+				}
 			}
 
-			if($sql){
-				
-				echo '<script type="text/javascript">';
-				echo 'setTimeout(function (){swal({html:true,title: "Success!", text:"You database has imported successfully. You have inserted the records",type: "success"}, function(){window.location = "admin_course.php";})}, 50);';
-				echo '</script>';
-			
-			}else{
-			
-			echo '<script type="text/javascript">';
-				echo 'setTimeout(function (){swal({html:true,title: "Sorry!", text:"There is some problem.",type: "warning"}, function(){window.location = "admin_course.php";})}, 50);';
-				echo '</script>';
-			
-			} 
-
 	}	
-	else if(isset($_POST['button_edit'])){
-		
+	if(isset($_POST['button_edit'])){
+		if($_POST['course']=="null"){
+			echo '<script type="text/javascript">';
+			echo 'setTimeout(function (){swal({html:true,title: "Opps!", text:"Please select a course.",type: "warning"}, function(){window.location = "admin_course.php";})}, 50);';
+			echo '</script>';
+		}
+		else{
 		$_SESSION['session1']=$_GET["session_selected"];
 		$_SESSION['course1']=$_POST['course'];
 		
 		header("Location:edit_course.php");
+		}
 		
-	}else if(isset($_POST['button_add'])){
+	}
+	if(isset($_POST['button_add'])){
 			
 		header("Location:add_course.php");
 		
-	}else if(isset($_POST['button_delete'])){
+	}
+	
+	if(isset($_POST['session_add'])){
+			
+		header("Location:add_session.php");
+		
+	}
+	
+	if(isset($_POST['button_delete'])){
+		if($_POST['course']=="null"){
+			echo '<script type="text/javascript">';
+			echo 'setTimeout(function (){swal({html:true,title: "Opps!", text:"Please select a course.",type: "warning"}, function(){window.location = "admin_course.php";})}, 50);';
+			echo '</script>';
+		}
+		else{
 ?>		
 		<script type="text/javascript">
 	
@@ -90,7 +130,7 @@
 	
 <?php	
 	}
-	
+	}
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -126,6 +166,11 @@
     <script src="sweetalert-master/dist/sweetalert.min.js"></script> 
 	<link rel="stylesheet" type="text/css" href="sweetalert-master/dist/sweetalert.css"/>
 	
+	<link href="bootstrap-fileinput/css/fileinput.css" media="all" rel="stylesheet" type="text/css" />
+    <script src="bootstrap-fileinput/js/fileinput.js" type="text/javascript"></script>
+    <script src="bootstrap-fileinput/js/fileinput_locale_fr.js" type="text/javascript"></script>
+     <script src="bootstrap-fileinput/js/fileinput_locale_es.js" type="text/javascript"></script>
+
 	
 	<style>
 	
@@ -218,7 +263,22 @@ function majorselect(maj,second) {
 		window.location.href = "admin_course.php?session_selected="+session_value;
 	}
    }
+   
+   function sessionselect2(sessi,second) {
+	   var session_value = sessi.options[sessi.selectedIndex].value;
+	   //var second_value = second.options[second.selectedIndex].value;
+	   //var second = <?php echo(json_encode(isset($_GET["major_selected"]))); ?>;
+	   var s=second;
+	
+		window.location.href = "admin_course.php?session_delete="+session_value;
+	}
 
+
+   
+   $('#pdffile').change(function(){
+     $('#subfile').val($(this).val());
+});
+   
 </script>
 </head>
 <body>
@@ -275,7 +335,7 @@ function majorselect(maj,second) {
                         <ul id="menu-top" class="nav navbar-nav navbar-right">
 							<li><a href="admin_home.php"><i class="fa fa-home fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Home</a></li>
 							<li><a class="menu-top-active" href="admin_course.php"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Courses</a></li>
-                            <li><a href="result.php"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</a></li>
+                            <li><a href="admin_result.php"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</a></li>
                         </ul>
                     </div>
                 </div>
@@ -329,7 +389,7 @@ function majorselect(maj,second) {
 									?>
 						</select>
 						
-						<button class="btn btn-warning" type="submit" name="session_add"><span class="glyphicon glyphicon-plus"></span>&nbsp&nbsp New Session</button>&nbsp;
+						<button class="btn btn-primary" type="submit" name="session_add"><i class="fa fa-pencil" aria-hidden="true"></i>&nbsp&nbsp Manage Session</button>&nbsp;
 						
 						<br><br>
                       <!--  <label>Major :  </label><br>
@@ -380,7 +440,7 @@ function majorselect(maj,second) {
 													$row=mysqli_fetch_array($result,MYSQLI_ASSOC);
 													
 													$courseName=$row['course_name'];												
-													echo "<option value=".$course_code.">".$course_code."\t\t". $courseName."</option>";
+													echo "<option data-hidden='true' value=".$course_code.">".$course_code."\t\t". $courseName."</option>";
 												}
 										}
 									else{
@@ -391,7 +451,6 @@ function majorselect(maj,second) {
 									if(isset($_GET["session_selected"]))
 									{
 										$sessi = $_GET['session_selected'];	
-										$majo=$_GET["major_selected"];
 										
 											$result = mysqli_query($db, "SELECT * FROM courses WHERE session like '$sess'");
 										
@@ -451,8 +510,41 @@ function majorselect(maj,second) {
 															echo "<td>" . $row['pre_requisite'] . "<br></td>";
 														}
 														echo "</tr>";
-											
-											
+														
+														echo "<tr>";
+														echo "<th>Elective:</th>";
+														
+														$resultElective = mysqli_query($db, "SELECT * FROM `t_elective` join `t_major` on
+															`t_major`.major_id = `t_elective`.major_id
+															WHERE `t_elective`.course_code like '$course_code'");
+															$getElectiveResult=mysqli_fetch_array($resultElective,MYSQLI_ASSOC);
+															
+															if($getElectiveResult==0){
+																echo "<td>No<br></td>";
+															}
+															else{
+																	echo "<td>" . $getElectiveResult['major'] . "<br></td>";
+															}
+														echo "</tr>";
+														
+														echo "<tr>";
+														echo "<th>Category:</th>";
+														
+														if ($row['category']==0){
+															echo '<td>Unknown<br></td>';
+														}
+														else{
+															$category_id=$row['category'];
+															$resultCategory = mysqli_query($db, "SELECT * FROM `t_elective_ctg` WHERE id = '$category_id'");
+															$getCategoryResult=mysqli_fetch_array($resultCategory,MYSQLI_ASSOC);
+															
+															
+															echo '<td>'.$getCategoryResult['category'].'<br></td>';
+														}
+														echo "</tr>";
+														
+														
+														
 														echo "</table>";
 														
 														echo "<table>";
@@ -479,9 +571,12 @@ function majorselect(maj,second) {
 				</div>
                     </div>
 					</form>
-					
-					
-					                <div class="panel panel-info">
+					</div>
+					<div class="row">
+
+					 <div class="col-md-12">
+
+					 <div class="panel panel-info">
                     <div class="panel-heading">
                         Upload List of Courses
                     </div>
@@ -501,9 +596,14 @@ function majorselect(maj,second) {
 									
 									?>
 						</select><br><br>
-             
 						
-						<input type="file" name="file"><i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp&nbsp Choose Excel File</input><br>
+
+						<label class="control-label">Select File</label>
+						<input name="file" type="file" class="file file-loading"  data-show-upload="false" data-allowed-file-extensions='["csv"]'/>
+						
+						
+						<a href='course_template.csv' target="_blank">Download file template</a>
+						
 						 <hr />
 
 						<button class="btn btn-warning" type="submit" name="button_upload"><i class="fa fa-upload" aria-hidden="true"></i>&nbsp&nbsp Upload Excel File</button>&nbsp;
@@ -512,12 +612,82 @@ function majorselect(maj,second) {
 
                     </div>
 				</div>
+				</div>	
+				
+
+				<!--	 <div class="col-md-6">
+
+					                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Delete Multiple of Courses
+                    </div>
+                    <div class="panel-body">
+                        <form name="import" method="post" enctype="multipart/form-data">
+                        <label>Session : </label><br>
+									<?php
+			
+										echo '<select class="selectpicker" name="session_delete" data-live-search="true" data-size="10" data-width="50%" onchange="javascript:sessionselect2(this,0)">';
+									if(isset($_GET["session_delete"]))
+									{
+										$sess = $_GET['session_delete'];
+										$session_result = mysqli_query($db, "SELECT * FROM t_session");
+										echo '<option data-hidden="true" value=$sess>Session '.$sess.'</option>';
+										while($getSessionArray = mysqli_fetch_array($session_result))
+										{
+											echo "<option value={$getSessionArray['session']}>{$getSessionArray['session']}</option>";
+										}
+									}
+									else{
+										$session_result = mysqli_query($db, "SELECT * FROM t_session");
+										echo '<option data-hidden="true" value="null">Select session.</option>';
+										while($getSessionArray = mysqli_fetch_array($session_result))
+										{
+											echo "<option value={$getSessionArray['session']}>{$getSessionArray['session']}</option>";
+										}
+									}
+									
+									?>
+						</select><br><br>
+						
+						<label>Course : </label><br>
+                        <select class="selectpicker" name="course_delete" data-live-search="true" data-size="10" data-width="50%" multiple>
+									<?php
+									
+								
+									echo '<option data-hidden="true" value="null">Select course.</option>';
+						
+																		
+									if(isset($_GET["session_delete"]))
+									{
+										$sessi = $_GET['session_delete'];	
+										
+											$result = mysqli_query($db, "SELECT * FROM courses WHERE session like '$sessi'");
+										
+										while($getCourseArray = mysqli_fetch_array($result))
+										{
+											echo "<option value={$getCourseArray['course_code']}>{$getCourseArray['course_code']}\t\t{$getCourseArray['course_name']}</option>";
+										}
+									}
+									?>
+						</select><br>
+						
+						 <hr />
+
+						<button class="btn btn-warning" type="submit" name="button_upload"><i class="fa fa-upload" aria-hidden="true"></i>&nbsp&nbsp Upload Excel File</button>&nbsp;
+
+						</form>
+
+                    </div>
+				</div>
+				</div>	-->
+				</div>	
+					
 					
 					
                      <!--<div class="panel-footer text-muted">
                         <strong>Note : </strong>Please note that we track all messages so don't send any spams.
                     </div> -->
-                </div>
+               
                      </div>
                 </div>
 

@@ -31,6 +31,32 @@
 			$pre_requisite=$_POST['pre_requisite'];
 			$course_info=$_POST['course_info'];
 			$session=$_POST['session'];
+			$elective=$_POST['elective'];
+			
+			if($elective=0){
+				$resultElective = mysqli_query($db, "SELECT * FROM `t_elective` 
+									WHERE course_code like '$course_code'");
+				$checkElectiveResult=mysqli_fetch_array($resultElective,MYSQLI_ASSOC);
+				
+				if($checkElectiveResult>0){
+					$delete=mysqli_query($db,"delete from t_elective where course_code='$course_code'");
+				}
+			}
+			else{
+				if($checkElectiveResult>0){
+				$updateElective=mysqli_query($db,"
+								update t_elective 
+								set 
+								course_code='$course_code', 
+								major_id='$elective',
+								category='$category'
+								where course_code='$course_code'");
+				}
+				else{
+					$sql = mysqli_query($db,"INSERT INTO t_elective (course_code, major_id,category) 
+							VALUES ('$course_code','$elective','$category')");
+				}
+			}
 			
 
 			$query3=mysqli_query($db,"
@@ -42,7 +68,8 @@
 			semester_available='$semester_available', 
 			pre_requisite='$pre_requisite',
 			course_info='$course_info',
-			session='$session'
+			session='$session',
+			category='$category'
 			where course_code='$course1' AND session='$session1'");
 			
 			if($query3)
@@ -259,7 +286,11 @@ $(window).scroll(function() {
 										echo '<option data-hidden="true" value="null">Select Pre-requisite.</option>';
 									}
 									else{
-										echo '<option data-hidden="true" value=pre_requisite>'.$course_result['pre_requisite'].'</option>';
+										$pre_requisite=$course_result['pre_requisite'];
+										$getPreRequisite = mysqli_query($db, "SELECT * FROM `courses` WHERE course_code = '$pre_requisite'");
+										$PreRequisiteResult=mysqli_fetch_array($getPreRequisite,MYSQLI_ASSOC);
+										
+										echo '<option data-hidden="true" value="'.$pre_requisite.'">{$PreRequisiteResult["course_code"]}\t\t{$PreRequisiteResult["course_name"]}</option>';
 									}
 									
 										$result = mysqli_query($db, "SELECT * FROM courses");
@@ -270,29 +301,58 @@ $(window).scroll(function() {
 									?>
 						</select><br>
 						
+						<label>Elective		:</label><br>
+						<select class="selectpicker" name="elective" data-size="10" data-live-search="true" data-width="40%">	
+									<?php
+									$c_c=$course_result['course_code'];
+									
+									$resultElective = mysqli_query($db, "SELECT * FROM `t_elective` join `t_major` on
+									`t_major`.major_id = `t_elective`.major_id
+									WHERE `t_elective`.course_code like '$c_c'");
+									$getElectiveResult=mysqli_fetch_array($resultElective,MYSQLI_ASSOC);
+									
+									if($getElectiveResult==0){
+										echo '<option data-hidden="true" value="null">Not an elective.</option>';
+									}
+									else{
+										$major_name=$getElectiveResult['major'];
+										$major_id=$getElectiveResult['major_id'];
+										echo '<option data-hidden="true" value="'.$major_id.'">'.$major_name.'</option>';
+									}
+									$result = mysqli_query($db, "SELECT * FROM t_major");									
+									while($getMajorArray = mysqli_fetch_array($result))
+									{
+										echo "<option value={$getMajorArray['major_id']}>{$getMajorArray['major']}</option>";
+									}
+										echo "<option value=0}>Not an elective.</option>";
+									?>
+						</select><br>
+						
+						<label>Category		:</label><br>
+						<select class="selectpicker" name="category" data-size="10" data-live-search="true" data-width="40%">	
+									<?php
+									if ($course_result['category']==0){
+										echo '<option data-hidden="true" value="null">Select Category.</option>';
+									}
+									else{
+										$category_id=$course_result['category'];
+										$resultCategory = mysqli_query($db, "SELECT * FROM `t_elective_ctg` WHERE id = '$category_id'");
+										$getCategoryResult=mysqli_fetch_array($resultCategory,MYSQLI_ASSOC);
+										
+										
+										echo '<option data-hidden="true" value="'.$category_id.'">'.$getCategoryResult['category'].'</option>';
+									}
+									
+										$result = mysqli_query($db, "SELECT * FROM `t_elective_ctg`");
+										while($getCategoryArray = mysqli_fetch_array($result))
+										{
+											echo "<option value={$getCategoryArray['id']}>{$getCategoryArray['category']}</option>";
+										}
+									?>
+						</select><br>
+						
 						<label>Course Information		:</label><br>
 						<textarea class="form-control" rows="5" name="course_info"><?php echo $course_result['course_info']; ?></textarea><br>
-						
-					<!--	<label>Elective		:</label><br>
-						<select class="selectpicker" name="elective" data-size="10" data-live-search="true" data-width="40%">	
-									// <?php
-									// if ($course_result['elective_id']==0){
-										// echo '<option data-hidden="true" value=0>Not an elective</option>';
-									// }
-									// else{
-										// $m_id=$course_result['major_id'];
-										// $sql = mysqli_query($db, "SELECT * FROM t_major where major_id= '$m_id'");
-										// $row=mysqli_fetch_array($sql,MYSQLI_ASSOC);
-										// echo '<option data-hidden="true" value=pre_requisite>'.$row['major'].'</option>';
-									// }
-									
-										// $result = mysqli_query($db, "SELECT * FROM t_major");
-										// while($getMajorArray = mysqli_fetch_array($result))
-										// {
-											// echo "<option value={$getMajorArray['major_id']}>{$getMajorArray['major']}</option>";
-										// }
-									// ?>
-						</select><br><br> -->
 						
 						<button class="btn btn-success" type="submit" name="submit" value="update"><i class="fa fa-floppy-o" aria-hidden="true"></i>&nbsp Save</button>
 						<button class="btn btn-default" type="cancel" name="cancel" value="cancel" formnovalidate>Cancel</button>

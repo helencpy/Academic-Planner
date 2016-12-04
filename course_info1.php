@@ -39,6 +39,7 @@
     <script src="sweetalert-master/dist/sweetalert.min.js"></script> 
 	<link rel="stylesheet" type="text/css" href="sweetalert-master/dist/sweetalert.css"/>
 	
+	<script src="bootstrap-validator-master/dist/validator.min.js"></script>
 	
 	<style>
 	
@@ -61,6 +62,7 @@ td{
 .modal-header {
       background-color: #AF7AC5;
       color:white !important;
+      text-align: center;
       font-size: 30px;
   }
 
@@ -72,28 +74,59 @@ $(document).ready(function(){
 		$(window).scrollTop(sessionStorage.scrollTop);
 	}
 	
-	<?php 
-	if(isset($_POST['button_find'])){
-		 if($_POST['course']=="null"){
-		 ?>
-		setTimeout(function (){swal({html:true,title: "Opps!", text:"Please select course.",type: "warning"}, function(){window.location = "course_info.php";})}, 100);
-	<?php } else{			?>	
+	<?php if(isset($_POST['button_find'])){?>	
 		$('#myModal').modal('show');
-	<?php }} ?>
+	<?php } ?>
 });
 
 $(window).scroll(function() {
   sessionStorage.scrollTop = $(this).scrollTop();
 });
 
+function majorselect(maj,second) {
+      var major_value = maj.options[maj.selectedIndex].value;
+	  //var second_value = second.options[second.selectedIndex].value;
+	  //var second = <?php echo(json_encode(isset($_GET["session_selected"]))); ?>;
+	  var s=second;
+	 var num2=1;
+	if(s==num2) {
+		var session_value = 
+		<?php 
+		if(isset($_GET["session_selected"])){
+		echo(json_encode($_GET["session_selected"])); 
+		}
+		else{
+			echo "none";
+		}
+		?>;
+		window.location.href = "course_info.php?session_selected="+session_value+"&major_selected="+major_value;
+	}
+	else {
+		window.location.href = "course_info.php?major_selected="+major_value;
+	}
+   }
    
    function sessionselect(sessi,second) {
 	   var session_value = sessi.options[sessi.selectedIndex].value;
 	   //var second_value = second.options[second.selectedIndex].value;
 	   //var second = <?php echo(json_encode(isset($_GET["major_selected"]))); ?>;
-
+	   var s=second;
+	 var num2=1;
+		if(s==num2) {
+		var major_value = 
+		<?php 
+		if(isset($_GET["major_selected"])){
+		echo(json_encode($_GET["major_selected"])); 
+		}
+		else{
+			echo "none";
+		}
+		?>;
+		window.location.href = "course_info.php?session_selected="+session_value+"&major_selected="+major_value;
+	}
+	else {
 		window.location.href = "course_info.php?session_selected="+session_value;
-	
+	}
    }
 
 </script>
@@ -103,7 +136,7 @@ $(window).scroll(function() {
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                   You are logged in as <em style="color:#AED6F1  ;"><?php echo $login_user;?>.</em> (<a href="logout.php" style="color:#AED6F1  ;">Logout?</a>)
+                   Faculty of Computer Science & Information Technology, University of Malaya
                   <!-- &nbsp;&nbsp; -->
                    
                 </div>
@@ -121,11 +154,11 @@ $(window).scroll(function() {
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="index.html">
-                     <img src="assets/img/try.png" />
+                     <img src="assets/img/LOGO.png" />
                 </a>
 
             </div>
-			
+
             <div class="left-div">
                 <div class="user-settings-wrapper">
                     <ul class="nav">
@@ -134,14 +167,33 @@ $(window).scroll(function() {
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
                                 <span class="glyphicon glyphicon-education" style="font-size: 25px;"></span>
                             </a>
-                   
+                            <div class="dropdown-menu dropdown-settings">
+                                <div class="media">
+                                    <a class="media-left" href="#">
+                                        <img src="assets/img/64-64.jpg" alt="" class="img-rounded" />
+                                    </a>
+                                    <div class="media-body">
+                                        <h4 class="media-heading"><?php echo $login_user;?> </h4>
+                                        <h5>
+										<?php echo $major;?>
+										</h5>
+
+                                    </div>
+                                </div>
+                                <hr />
+                                <h5><strong>Personal Bio : </strong></h5>
+                                Anim pariatur cliche reprehen derit.
+                                <hr />
+                                <a href="#" class="btn btn-info btn-sm">Full Profile</a>&nbsp; <a href="login.html" class="btn btn-danger btn-sm">Logout</a>
+
+                            </div>
                         </li>
 
 
                     </ul>
                 </div>
             </div>
-		</div>
+        </div>
     </div>
     <!-- LOGO HEADER END-->
     <section class="menu-section">
@@ -150,11 +202,10 @@ $(window).scroll(function() {
                 <div class="col-md-12">
                     <div class="navbar-collapse collapse ">
                         <ul id="menu-top" class="nav navbar-nav navbar-right">
-							<li><a href="home.php"><i class="fa fa-home fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Home</a></li>
-                            <li><a href="result.php"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</a></li>
-							<li><a class="menu-top-active" href="course_info.php"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbspCourses</a></li>
-                            <li><a href="table.html"><i class="fa fa-calculator fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Planner</a></li>
-                            <li><a href="recommendation.php"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Recommendation</a></li>
+                            <li><a class="menu-top-active" href="course_info">Courses</a></li>
+                            <li><a href="ui.html">Result</a></li>
+                            <li><a href="table.html">Planner</a></li>
+                            <li><a href="forms.html">Recommendation</a></li>
                         </ul>
                     </div>
                 </div>
@@ -167,7 +218,7 @@ $(window).scroll(function() {
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h4 class="page-head-line"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbspCourses</h4>
+                    <h4 class="page-head-line">Courses</h4>
 
                 </div>
 
@@ -175,17 +226,20 @@ $(window).scroll(function() {
             <div class="row">
                 <div class="col-md-12">
                       <div class="Compose-Message">               
-                <div class="panel panel-info">
+                <div class="panel panel-success">
                     <div class="panel-heading">
                         Search Course Information
                     </div>
                     <div class="panel-body">
-                        <form method="post">
+                        <form data-toggle="validator" method="post">
                         <label>Session : </label><br>
 									<?php
-									
+									if(isset($_GET["major_selected"])){
+										echo '<select class="selectpicker" name="session" data-live-search="true" data-size="10" data-width="25%" onchange="javascript:sessionselect(this,1)">';
+									}
+									else{
 										echo '<select class="selectpicker" name="session" data-live-search="true" data-size="10" data-width="25%" onchange="javascript:sessionselect(this,0)">';
-					
+									}
 									
 									if(isset($_GET["session_selected"]))
 									{
@@ -207,34 +261,52 @@ $(window).scroll(function() {
 									}
 									?>
 						</select><br>
-                        <label>Course : </label><br>
-                        <select class="selectpicker" name="course" data-live-search="true" data-size="10" data-width="50%">
+                        <label>Major :  </label><br>
 									<?php
-									if(isset($_POST['button_find']))
-											{
-												$course_code = mysqli_real_escape_string($db, $_POST['course']);
-												if($course_code=="null"||$course_code==null){
-													echo '<option data-hidden="true" value="null">Select course.</option>';
-												}
-												else{
-													$sql="SELECT * FROM courses where course_code like '$course_code'";
-													$result = mysqli_query($db,$sql);
-													$row=mysqli_fetch_array($result,MYSQLI_ASSOC);
-													
-													$courseName=$row['course_name'];												
-													echo "<option value=".$course_code.">".$course_code."\t\t". $courseName."</option>";
-												}
-										}
+									if(isset($_GET["session_selected"])){
+										echo '<select class="selectpicker" name="major" data-live-search="true" data-size="10" data-width="50%" onchange="javascript:majorselect(this,1)">';
+									}
 									else{
-									echo '<option data-hidden="true" value="null">Select course.</option>';
+										echo '<select class="selectpicker" name="major" data-live-search="true" data-size="10" data-width="50%" onchange="javascript:majorselect(this,0)">';
 									}
 									
-									if(isset($_GET["session_selected"]))
+									if(isset($_GET["major_selected"]))
+									{
+										$majorSelected = $_GET['major_selected'];
+										$get_majorSelected = mysqli_query($db,"SELECT * FROM t_major WHERE `major_id`=$majorSelected");
+										$row=mysqli_fetch_array($get_majorSelected,MYSQLI_ASSOC);
+										
+										$major_result = mysqli_query($db, "SELECT * FROM t_major");
+										echo '<option data-hidden="true" value=$majorSelected> '.$row[major].'</option>';
+										while($getMajorArray = mysqli_fetch_array($major_result))
+										{
+											echo "<option value={$getMajorArray['major_id']}>{$getMajorArray['major']}</option>";
+										}
+									}
+									else{
+										$major_result = mysqli_query($db, "SELECT * FROM t_major");
+										echo '<option data-hidden="true" value="null">Select major.</option>';
+										while($getMajorArray = mysqli_fetch_array($major_result))
+										{
+											echo "<option value={$getMajorArray['major_id']}>{$getMajorArray['major']}</option>";
+										}
+									}
+									?>
+						</select><br>
+                        <label>Course : </label><br>
+                        <select class="selectpicker" name="course" data-live-search="true" data-size="10" data-width="50%">
+									<option data-hidden="true" value="null">Select course.</option>
+									<?php
+									if(isset($_GET["session_selected"])&&isset($_GET["major_selected"]))
 									{
 										$sessi = $_GET['session_selected'];	
-										
+										$majo=$_GET["major_selected"];
+										if($majo==5){
 											$result = mysqli_query($db, "SELECT * FROM courses WHERE session like '$sess'");
-										
+										}
+										else{
+											$result = mysqli_query($db, "SELECT * FROM courses WHERE session like '$sess' AND (major_id='$majo' OR major_id=5)");
+										}
 										while($getCourseArray = mysqli_fetch_array($result))
 										{
 											echo "<option value={$getCourseArray['course_code']}>{$getCourseArray['course_code']}\t\t{$getCourseArray['course_name']}</option>";
@@ -254,32 +326,36 @@ $(window).scroll(function() {
 											<?php
 											if(isset($_POST['button_find']))
 											{
-												
+												$course_code = mysqli_real_escape_string($db, $_POST['course']); 
 												if(isset($course_code)) 
 												{
 								
+													$sql="SELECT * FROM courses where course_code like '$course_code'";
+													$result = mysqli_query($db,$sql);
+													$row=mysqli_fetch_array($result,MYSQLI_ASSOC);
 													
+													$courseName=$row['course_name'];
 													
-                                            echo '<h4 class="modal-title" id="myModalLabel"><i class="fa fa-info-circle fa-lg" aria-hidden="true"></i><b>&nbsp&nbsp&nbsp'.$course_code.'</b> '.$courseName.'</h4>';
+                                            echo '<h4 class="modal-title" id="myModalLabel"><span class="glyphicon glyphicon-book"></span><b>  '.$course_code.'</b> '.$courseName.'</h4>';
                                         echo '</div>';
                                         echo '<div class="modal-body">';
 										
 													
 														echo '<table>';
 														echo "<tr>";
-														echo "<th>Credit:</th>";
+														echo "<th>Credit</th>";
 											
 														echo "<td>" . $row['credit'] . " credits <br></td>";
 														echo '</tr>';
 											
 														echo "<tr>";
-														echo "<th>Semester Available:</th>";
+														echo "<th>Semester Available</th>";
 											
 														echo "<td>Semester " . $row['semester_available'] . "<br></td>";
 														echo "</tr>";
 											
 														echo "<tr>";
-														echo "<th>Pre-requisite:</th>";
+														echo "<th>Pre-requisite</th>";
 											
 														if(!$row['pre_requisite']||$row['pre_requisite']="null"){
 															echo"<td>None<br></td>";
@@ -294,7 +370,7 @@ $(window).scroll(function() {
 														
 														echo "<table>";
 														echo "<tr>";
-														echo "<th>Course Info:</th>";
+														echo "<th>Course Info</th>";
 														echo "</tr>";
 											
 														echo '<tr>';
@@ -309,11 +385,12 @@ $(window).scroll(function() {
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-primary">Save changes</button>
                                         </div>
-								</div>
+                                    </div>
+                                </div>
                             </div>
-                    </div>
-				</div>
+						
                     </div>
 					</form>
                      <!--<div class="panel-footer text-muted">

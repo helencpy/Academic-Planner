@@ -72,7 +72,7 @@ td{
 <script>
 $(document).ready(function(){
 	<?php 
-	if(!empty($_GET)){
+	if(!empty($_GET)&&!isset($_GET["major_selected"])){
 		 ?>
 		$('#myModal').modal('show');
 	<?php } ?>
@@ -87,6 +87,13 @@ $(document).ready(function(){
 $(window).scroll(function() {
   sessionStorage.scrollTop = $(this).scrollTop();
 });
+
+function majorselect(mjr) {
+	   var mjr_value = mjr.options[mjr.selectedIndex].value;
+	  
+		window.location.href = "recommendation.php?major_selected="+mjr_value;
+	
+   }
 
 </script>
 </head>
@@ -215,14 +222,14 @@ $(window).scroll(function() {
 					<div class="clearfix"></div>
 					
 					<br>
-					<div class="col-lg-8">
+					<div class="col-lg-10">
 						<label><p>Grade of Courses:<br></p></label>
 						(To predict the grade of elective course)
 					<?php
-					$sql="SELECT * FROM `$student_id` join `courses` on `courses`.course_code like`$student_id`.course_code where `$student_id`.course_status=1 order by `$student_id`.semester";
+					$sql="SELECT * FROM `results` join `courses` on `courses`.course_code like`results`.course_code where `results`.student_id like '$student_id' order by `results`.session";
 					$result = mysqli_query($db,$sql);
 					$row = mysqli_fetch_array($result);
-			
+					echo '<div style="height:300px;overflow:auto;">';
 					echo "<table class='table table-bordered table-striped table-hover'>
 					<thead>
 					<tr>
@@ -231,12 +238,12 @@ $(window).scroll(function() {
 					<th>Grade</th>
 					</tr>
 					</thead>";
-					
+					$c_c=$row['course_code'];
 					echo "<tbody>";
 					echo "<tr>";
 						echo "<td>" . $row['course_code'] . "</td>";
 						echo "<td>" . $row['course_name'] . "</td>";
-						echo "<td><select class='selectpicker' name='grade' data-width='auto'>
+						 echo "<td><select class='selectpicker' name=$c_c data-width='auto'>
 									<option data-hidden='true' value=". $row['grade'] .">". $row['grade'] ."</option>
 									<option value='4'>A+/A</option>
 									<option value='3.7'>A-</option>
@@ -250,18 +257,19 @@ $(window).scroll(function() {
 									<option value='1.0'>D</option>
 									<option value='0'>F</option>
 									</Select>
-									</td>";
+									</td>"; 
+						//echo "<td>".$row['grade']."</td>";
 						echo "</tr>";
 						
 						
 						
 					while($row = mysqli_fetch_array($result)) {
-					
+					$c_c=$row['course_code'];
 					echo "<tr>";
 						echo "<td>" . $row['course_code'] . "</td>";
 						echo "<td>" . $row['course_name'] . "</td>";
 						
-						echo "<td><select class='selectpicker' name='grade' data-width='auto'>
+						 echo "<td><select class='selectpicker' name=$c_c data-width='auto'>
 									<option data-hidden='true' value=". $row['grade'] .">". $row['grade'] ."</option>
 									<option value='4'>A+/A</option>
 									<option value='3.7'>A-</option>
@@ -275,25 +283,65 @@ $(window).scroll(function() {
 									<option value='1.0'>D</option>
 									<option value='0'>F</option>
 									</Select>
-									</td>";
+									</td>"; 
+						//echo "<td>".$row['grade']."</td>";
 						echo "</tr>";
 					}
 					
 					echo "</tbody>";
 					echo "</table>";
-					
+					echo '</div>';
 					?>
 					</div>
 			
 					<div class="clearfix"></div>
 					<br>
-					<div class="col-lg-8">
-					<label><p>Average Previous GPA of the Elective Course:</p></label>
+					<div class="col-lg-10">
+					<label><p>Average Previous GPA of the 
+					
+						<select class="selectpicker" name="major" data-size="10" data-live-search="true" data-width="55%" onchange="javascript:majorselect(this)";>	
+									<?php
+									
+									$resultMajor = mysqli_query($db, "SELECT * FROM t_major
+									WHERE major_id like '$user_major_id'");
+									$getMajorResult=mysqli_fetch_array($resultMajor,MYSQLI_ASSOC);
+									
+
+										$major_name=$getMajorResult['major'];
+										$major_id=$getMajorResult['major_id'];
+										
+										if(isset($_GET["major_selected"])){
+											$mjr_slct=$_GET["major_selected"];
+											$mjr_slct_sql = mysqli_query($db, "SELECT * FROM t_major
+											WHERE major_id like '$mjr_slct'");
+											$getMjrSlctResult=mysqli_fetch_array($mjr_slct_sql,MYSQLI_ASSOC);
+											
+											echo '<option data-hidden="true" value="'.$major_id.'">'.$getMjrSlctResult["major"].'</option>';
+										}
+										else{
+										echo '<option data-hidden="true" value="'.$major_id.'">'.$major_name.'</option>';
+										}
+									
+									$result = mysqli_query($db, "SELECT * FROM t_major");									
+									while($getMajorArray = mysqli_fetch_array($result))
+									{
+										echo "<option value={$getMajorArray['major_id']}>{$getMajorArray['major']}</option>";
+									}
+									?>
+						</select>
+					
+					Elective Course:</p></label>
 					
 					<?php
-					$getElective="SELECT * FROM t_elective join `courses` on `courses`.course_code like`t_elective`.course_code where t_elective.major_id=1";
+					if(isset($_GET["major_selected"])){
+						$mjr_get=$_GET["major_selected"];
+						$getElective="SELECT * FROM t_elective join `courses` on `courses`.course_code like`t_elective`.course_code where t_elective.major_id='$mjr_get'";
+					}
+					else{
+						$getElective="SELECT * FROM t_elective join `courses` on `courses`.course_code like`t_elective`.course_code where t_elective.major_id='$major_id'";
+					}
 					$session_result = mysqli_query($db,$getElective);
-					
+					echo '<div style="height:300px;overflow:auto;">';
 					echo '<table class="table table-bordered table-striped table-hover">';
 					
 					echo "
@@ -326,6 +374,7 @@ $(window).scroll(function() {
 					echo '</td></tr>';
 					}
 					echo '</tbody></table>';
+					echo '</div>';
 					?>
 					</div>
 					

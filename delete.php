@@ -46,13 +46,16 @@ $query1=mysqli_query($db,"delete from temp where course_code='$deleteCourse'");
 
 }
 
+if(isset($_POST['result_id1']))
+{
+$result_id1=$_POST['result_id'];
+$query1=mysqli_query($db,"delete from result where result_id='$result_id'");
+
+}
+
 //used
 if(isset($_POST['courses'])&&isset($_POST['session']))
 {
-	
-	echo "<script>";
-	echo "alert('hello');";
-	echo "</script>";
 	
 $courses=$_POST['courses'];
 $session=$_POST['session'];

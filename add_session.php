@@ -1,0 +1,307 @@
+<?php
+	include("check.php");
+	mysqli_query($db, "DELETE FROM `temp` WHERE username like '$login_user'");
+	unset($semester);
+	unset($session);
+		
+		if(isset($_POST['cancel'])){
+			header('location:admin_course.php');
+		}
+		
+		if(isset($_POST['submit']))
+		{	
+			$session=mysqli_real_escape_string($db,$_POST['session']);
+			$session_nxt=$session+1;
+			$new= $session."/". $session_nxt;
+			
+			$sql="Select * from t_session where session like '$new'";
+			$result=mysqli_query($db,$sql);
+			if (mysqli_num_rows($result) > 0){
+				
+				echo '<script type="text/javascript">';
+				echo 'setTimeout(function (){swal({html:true,title: "Opps!", text:"Session already existed.",type: "warning"}, function(){window.location = "add_session.php";})}, 50);';
+				echo '</script>';
+				
+			}
+ 			else{
+			
+			$query1=mysqli_query($db,"
+			INSERT INTO `t_session`( 
+			`session`) 
+			VALUES (
+			'$new')");
+			
+			if($query1)
+			{
+				
+				echo '<script type="text/javascript">';
+				echo 'setTimeout(function (){swal({html:true,title: "Success!", text:"New session is added.",type: "success"}, function(){window.location = "admin_course.php";})}, 50);';
+				echo '</script>';
+			}
+			} 
+		}
+		
+		if(isset($_POST['delete']))
+		{	
+			$session=mysqli_real_escape_string($db,$_POST['session']);
+			$session_nxt=$session+1;
+			$new= $session."/". $session_nxt;
+			
+			$sql="Select * from t_session where session like '$new'";
+			$result=mysqli_query($db,$sql);
+			if (mysqli_num_rows($result) == 0){
+				
+				echo '<script type="text/javascript">';
+				echo 'setTimeout(function (){swal({html:true,title: "Opps!", text:"Session not existed.",type: "warning"}, function(){window.location = "add_session.php";})}, 50);';
+				echo '</script>';
+				
+			}
+ 			else{
+?>		
+		<script type="text/javascript">
+	
+			setTimeout(function (){swal({
+			title: "Delete this session?", 
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#DD6B55",
+			confirmButtonText: "Yes, delete it!",
+			cancelButtonText: "No, cancel please!",
+			closeOnConfirm: false,
+			closeOnCancel: false}, 
+			function(isConfirm)
+			{
+				if(!isConfirm)
+				{
+					swal("Cancelled", "Delete action has been cancelled.", "error");
+				}
+				else
+				{
+					
+					var session_delete=<?php echo json_encode($new); ?>;
+					
+					$.ajax({
+							url: "delete.php",
+							type: "POST",
+							data: {deleteSession:session_delete}
+							});
+						
+					setTimeout(function (){swal({title: "Success!", text:"Session deleted.", type: "success"}, function(){window.location = "admin_course.php";})}, 100);
+				}})}, 100);
+		</script>
+	
+<?php	
+	}
+		}
+	
+?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <!--[if IE]>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <![endif]-->
+    <title>Academic Planner</title>
+    <!-- BOOTSTRAP CORE STYLE  -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <!-- FONT AWESOME ICONS  -->
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <!-- CUSTOM STYLE  -->
+    <link href="assets/css/style.css" rel="stylesheet" />
+     <!-- HTML5 Shiv and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+	
+	<!-- jQuery -->
+    <script src="js/jquery.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="css/bootstrap-select.css">
+	 <script src="js/bootstrap-select.js"></script>
+	
+    <script src="sweetalert-master/dist/sweetalert.min.js"></script> 
+	<link rel="stylesheet" type="text/css" href="sweetalert-master/dist/sweetalert.css"/>
+	
+	
+	<style>
+	
+	
+table {
+    min-width: 50%;
+    border-collapse: collapse;
+}
+
+table, td, th {
+   text-align: left;
+    padding: 5px;
+}
+
+td{
+	color: black;
+    
+}
+
+.modal-header {
+      background-color: #AF7AC5;
+      color:white !important;
+      font-size: 30px;
+  }
+
+</style>
+<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+	if (sessionStorage.scrollTop != "undefined") {
+		$(window).scrollTop(sessionStorage.scrollTop);
+	}
+});
+
+$(window).scroll(function() {
+  sessionStorage.scrollTop = $(this).scrollTop();
+});
+
+</script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                   You are logged in as <em style="color:#AED6F1  ;"><?php echo $login_user;?>.</em> (<a href="logout.php" style="color:#AED6F1  ;">Logout?</a>)
+                  <!-- &nbsp;&nbsp; -->
+                   
+                </div>
+
+            </div>
+        </div>
+    </header>
+    <!-- HEADER END-->
+    <div class="navbar navbar-inverse set-radius-zero">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">
+                     <img src="assets/img/try.png" />
+                </a>
+
+            </div>
+			
+            <div class="left-div">
+                <div class="user-settings-wrapper">
+                    <ul class="nav">
+
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                                <span class="glyphicon glyphicon-education" style="font-size: 25px;"></span>
+                            </a>
+                   
+                        </li>
+
+
+                    </ul>
+                </div>
+            </div>
+		</div>
+    </div>
+    <!-- LOGO HEADER END-->
+    <section class="menu-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="navbar-collapse collapse ">
+                        <ul id="menu-top" class="nav navbar-nav navbar-right">
+							<li><a href="admin_home.php"><i class="fa fa-home fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Home</a></li>
+							<li><a class="menu-top-active" href="course_info.php"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbspCourses</a></li>
+                            <li><a href="result.php"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <!-- MENU SECTION END-->
+    <div class="content-wrapper">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="page-head-line"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Courses</h4>
+
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                      <div class="Compose-Message">               
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <a href="admin_course.php">Course Information</a>&nbsp>&nbsp Add New Session / Delete Session
+                    </div>
+                    <div class="panel-body">
+
+					<form method="post" action="">
+					<label>Session			:</label><br>
+					
+					
+					<input type="number" name="session" id ="session" min="2010" max="2030" onchange="myFunction()" required value="<?php if(isset($_POST['session'])) echo $_POST['session'];?>"> &nbsp / <b id="demo"></b>
+					
+					
+						<script>
+						function myFunction() {
+							var x = document.getElementById("session").value;
+							var y= Number(x);
+							y+=1
+							document.getElementById("demo").innerHTML = y;
+						}
+						</script>
+					
+									
+					
+					<br /><br>
+					<button class="btn btn-warning" type="submit" name="submit" value="submit"><span class="glyphicon glyphicon-plus"></span>&nbsp&nbsp Add</button>
+					<button class="btn btn-danger" type="submit" name="delete" value="delete"><i class="fa fa-trash" aria-hidden="true"></i>&nbsp&nbsp Delete</button>
+					<button class="btn btn-default" type="cancel" name="cancel" value="cancel" formnovalidate> Cancel</a></button>
+				</form>
+					
+                     <!--<div class="panel-footer text-muted">
+                        <strong>Note : </strong>Please note that we track all messages so don't send any spams.
+                    </div> -->
+					</div>
+                </div>
+					</div>
+
+				</div>
+            
+			</div>
+        </div>
+    </div>
+    <!-- CONTENT-WRAPPER SECTION END-->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    &copy; 2016 Academic Project | By : cpyian@siswa.um.edu.my
+                </div>
+
+            </div>
+        </div>
+    </footer>
+    <!-- FOOTER SECTION END-->
+    <!-- JAVASCRIPT AT THE BOTTOM TO REDUCE THE LOADING TIME  -->
+    <!-- CORE JQUERY SCRIPTS -->
+	
+   
+	
+</body>
+</html>

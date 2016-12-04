@@ -8,6 +8,7 @@ $row=mysqli_fetch_array($sql,MYSQLI_ASSOC);
  
 $login_user=$row['username'];
 $student_id=$row['student_id'];
+$user_major_id=$row['major_id'];
 $major=$row['major'];
 $cgpa=$row['cgpa'];
 if(!isset($user_check))
