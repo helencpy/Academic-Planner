@@ -90,8 +90,11 @@ $(window).scroll(function() {
 
 function majorselect(mjr) {
 	   var mjr_value = mjr.options[mjr.selectedIndex].value;
+	  var current_cgpa=document.getElementsByName('current_cgpa')[0].value;
+	   var elective_ctg=document.getElementsByName('elective_ctg')[0].value;
 	  
-		window.location.href = "recommendation.php?major_selected="+mjr_value;
+		window.location.href = "recommendation.php?major_selected="+mjr_value+"&cgpa_input="+current_cgpa+"&interest_input="+elective_ctg;
+		//window.location.href = "recommendation.php?major_selected="+mjr_value;
 	
    }
 
@@ -152,7 +155,7 @@ function majorselect(mjr) {
 							<li><a href="home.php"><i class="fa fa-home fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Home</a></li>
 							<li><a href="result.php"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</a></li>
                             <li><a href="course_info.php"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbspCourses</a></li>
-                            <li><a href="table.html"><i class="fa fa-calculator fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Planner</a></li>
+                            <li><a href="planner.php"><i class="fa fa-calculator fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Planner</a></li>
                             <li><a class="menu-top-active" href="recommendation.php"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Recommendation</a></li>
                         </ul>
                     </div>
@@ -196,7 +199,13 @@ function majorselect(mjr) {
 						<label><p>Current CGPA:<br></p></label>
 							
 							<?php
-						echo "<input class='form-control' type='number' step=0.01 value=$cgpa min='0.01' max='4' name='current_cgpa'>";
+							if (isset($_GET["cgpa_input"])){
+								$cgpa_input=$_GET["cgpa_input"];
+								echo "<input class='form-control' type='number' step=0.01 value=$cgpa_input min='0.01' max='4' name='current_cgpa'>";
+							}
+							else{
+								echo "<input class='form-control' type='number' step=0.01 value=$cgpa min='0.01' max='4' name='current_cgpa'>";
+							}
 							?>
 					</div>
 						
@@ -206,8 +215,26 @@ function majorselect(mjr) {
 						<label><p>Interest:<br></p></label>
 							<div class="clearfix"></div>
 							<select class="selectpicker" name="elective_ctg" data-size="10" data-width="100%" >
-								<option data-hidden="true" value="null">Choose your interest.</option>
-								<?php
+							
+							<?php
+								if (isset($_GET["interest_input"])){
+									$interest_input=$_GET["interest_input"];
+								
+									if($interest_input=="null"){
+										echo '<option data-hidden="true" value="null">Choose your interest.</option>';
+									}
+									else{
+										$interest_slct_sql = mysqli_query($db, "SELECT * FROM t_elective_ctg
+													WHERE id = '$interest_input'");
+													$getInterestResult=mysqli_fetch_array($interest_slct_sql,MYSQLI_ASSOC);
+										
+											echo '<option data-hidden="true" value="'.$interest_input.'">'.$getInterestResult[category].'</option>';
+									}
+									}
+								else{
+									
+									echo '<option data-hidden="true" value="null">Choose your interest.</option>';
+								}
 
 								$result = mysqli_query($db, "SELECT * FROM t_elective_ctg");
 
@@ -269,8 +296,13 @@ function majorselect(mjr) {
 						echo "<td>" . $row['course_code'] . "</td>";
 						echo "<td>" . $row['course_name'] . "</td>";
 						
-						 echo "<td><select class='selectpicker' name=$c_c data-width='auto'>
-									<option data-hidden='true' value=". $row['grade'] .">". $row['grade'] ."</option>
+						$user_grade=$row['grade'];
+						$grade_sql = mysqli_query($db, "SELECT * FROM grade_point
+											WHERE grade like '$user_grade'");
+											$getGradeResult=mysqli_fetch_array($grade_sql,MYSQLI_ASSOC);
+						
+						 echo "<td><select class='selectpicker' name=$c_c data-width='auto'>						 						 
+									<option data-hidden='true' value=". $getGradeResult['pointer'] .">". $user_grade ."</option>
 									<option value='4'>A+/A</option>
 									<option value='3.7'>A-</option>
 									<option value='3.3'>B+</option>
@@ -316,7 +348,7 @@ function majorselect(mjr) {
 											WHERE major_id like '$mjr_slct'");
 											$getMjrSlctResult=mysqli_fetch_array($mjr_slct_sql,MYSQLI_ASSOC);
 											
-											echo '<option data-hidden="true" value="'.$major_id.'">'.$getMjrSlctResult["major"].'</option>';
+											echo '<option data-hidden="true" value="'.$mjr_slct.'">'.$getMjrSlctResult["major"].'</option>';
 										}
 										else{
 										echo '<option data-hidden="true" value="'.$major_id.'">'.$major_name.'</option>';
@@ -333,6 +365,32 @@ function majorselect(mjr) {
 					Elective Course:</p></label>
 					
 					<?php
+					$getElective="SELECT * FROM t_elective join `courses` on `courses`.course_code like`t_elective`.course_code where t_elective.major_id='$major'";
+					$electiveResult = mysqli_query($db,$getElective);
+
+					while($row = mysqli_fetch_array($electiveResult)){
+					$elec_c_c=$row['course_code'];	
+					$getResult="SELECT * FROM results where course_code like '$elec_c_c' and session like '2014/2015'";
+					$result = mysqli_query($db,$getResult);
+					$sumOfResult=0;
+					$j=0;
+
+					while ($resultRow = mysqli_fetch_array($result)){
+					 $sumOfResult+=$resultRow['grade_point'];
+					 $j++;
+					}
+					if($sumOfResult!=0){
+					$difficulty=$sumOfResult/$j;
+					$difficulty=($difficulty/$row['credit']);
+					$updateElectiveCourseOfDifficulty=mysqli_query($db,"
+													update t_elective 
+													set 
+													difficulty='$difficulty'
+													where course_code='$elec_c_c'");
+}					
+}
+					
+					
 					if(isset($_GET["major_selected"])){
 						$mjr_get=$_GET["major_selected"];
 						$getElective="SELECT * FROM t_elective join `courses` on `courses`.course_code like`t_elective`.course_code where t_elective.major_id='$mjr_get'";
