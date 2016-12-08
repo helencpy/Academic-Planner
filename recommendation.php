@@ -157,7 +157,11 @@ function majorselect(mjr) {
                             <li><a href="course_info.php"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbspCourses</a></li>
                             <li><a href="planner.php"><i class="fa fa-calculator fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Planner</a></li>
                             <li><a class="menu-top-active" href="recommendation.php"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Recommendation</a></li>
-                        </ul>
+							<li><a href="predict.php"><i class="fa fa-flag fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Prediction</a></li>
+                            <li><a href="cal.php"><i class="fa fa-file-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Calculator</a></li>
+                            <li><a href="statistic.php"><i class="fa fa-list-alt fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Statistic </a></li>
+						
+						</ul>
                     </div>
                 </div>
 
@@ -493,6 +497,7 @@ function majorselect(mjr) {
                                         </div>
                                         <div class="modal-body">
                                          <?php
+										 
 										  if(!empty($_GET)){
 					
 											$score = $_GET;
@@ -511,7 +516,6 @@ function majorselect(mjr) {
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                            <button type="button" class="btn btn-primary">Save changes</button>
                                         </div>
                                     </div>
                                 </div>

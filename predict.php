@@ -103,7 +103,7 @@ $(window).scroll(function() {
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                   You are logged in as <em style="color:#AED6F1  ;"><?php echo $login_user;?>.</em> (<a href="logout.php" style="color:#AED6F1  ;">Logout?</a>)
+                   You are logged in as <em style="color:#AED6F1  ;"><?php echo $login_user;?></em> (<a href="logout.php" style="color:#AED6F1  ;">Logout?</a>)
                   <!-- &nbsp;&nbsp; -->
                    
                 </div>
@@ -152,10 +152,10 @@ $(window).scroll(function() {
                         <ul id="menu-top" class="nav navbar-nav navbar-right">
 							<li><a href="home.php"><i class="fa fa-home fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Home</a></li>
                             <li><a href="result.php"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</a></li>
-							<li><a class="menu-top-active" href="course_info.php"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbspCourses</a></li>
-                            <li><a href="planner.php"><i class="fa fa-calculator fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Planner</a></li>
+							<li><a href="course_info.php"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbspCourses</a></li>
+                            <li><a class="planner.php" href="planner.php"><i class="fa fa-calculator fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Planner</a></li>
                             <li><a href="recommendation.php"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Recommendation</a></li>
-							<li><a href="predict.php"><i class="fa fa-flag fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Prediction</a></li>
+							<li><a class="menu-top-active" href="predict.php"><i class="fa fa-flag fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Prediction</a></li>
                             <li><a href="cal.php"><i class="fa fa-file-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Calculator</a></li>
                             <li><a href="statistic.php"><i class="fa fa-list-alt fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Statistic </a></li>
                         </ul>
@@ -170,7 +170,7 @@ $(window).scroll(function() {
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h4 class="page-head-line"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbspCourses</h4>
+                    <h4 class="page-head-line"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbspPrediction</h4>
 
                 </div>
 
@@ -180,73 +180,107 @@ $(window).scroll(function() {
                       <div class="Compose-Message">               
                 <div class="panel panel-info">
                     <div class="panel-heading">
-                        Search Course Information
+                        CGPA Predictor 
                     </div>
                     <div class="panel-body">
-                        <form method="post">
-                        <label>Batch : </label><br>
-									<?php
+						<div class="alert alert-info">
+                            Instruction on using the CGPA Predictor <br>
+							1. Select your major<br>
+							2. Select the category of subject that you would like to predict for your potential score<br>
+							3. Enter your most recent GPA of one subject from the same category. <br>
+							4. Press the calculate button<br>
+							
+						</div>
+                        <form action="<?php echo $_SERVER['PHP_SELF']?>" method="post">
+                        <label>Major : </label><br>
 									
-										echo '<select class="selectpicker" name="session" data-live-search="true" data-size="10" data-width="25%" onchange="javascript:sessionselect(this,0)">';
+									
+									<select name="major" data-width="25%" class="selectpicker" >
+    <option value="se">Software Engineering</option>
+    <option value="ai">Artificial Intelligence</option>
+    <option value="net">Networking</option>
+    <option value="mis">Management of Information System</option>
+  </select><br>
+  
+  
+  
+                        <label>Category : </label><br>
+                      <select name="cat" data-width="25%" class="selectpicker">
+						<option value="math">Mathematics</option>
+						<option value="prg">Programming</option>
+						<option value="theory">Theory</option>
+						<option value="others">Others</option>
+					  </select>
+						<br>
+						<label>Most Recent GPA : </label><Br><input type="number" name="gpa" value="" min="0" max="4" step="0.01" required > <Br>
+						
+						
+						<?php
+						
+$gpa = "";
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+	if(isset($_POST['gpa'], $_POST['Continue'] )){
+		$gpa = $_SESSION["gpa"] =	$_POST["gpa"] ;
+		$cat = $_SESSION["cat"] =	$_POST["cat"] ;
+		$major = $_SESSION["major"] =	$_POST["major"] ;
+		echo "<br>";
+						
+		
+		if($major == "se" ){
+			
+			if($cat == "prg"){
+		
+					$output = shell_exec("\"C:\\xampp\\htdocs\\AcademicPlanner\\R\\R-3.3.1\\bin\\Rscript.exe\" C:/xampp/htdocs/AcademicPlanner/R/R-3.3.1/bin/k/test.R $gpa");
 					
-									
-									if(isset($_GET["session_selected"]))
-									{
-										$sess = $_GET['session_selected'];
-										$session_result = mysqli_query($db, "SELECT * FROM t_session");
-										echo '<option data-hidden="true" value=$sess>Session '.$sess.'</option>';
-										while($getSessionArray = mysqli_fetch_array($session_result))
-										{
-											echo "<option value={$getSessionArray['session']}>{$getSessionArray['session']}</option>";
-										}
-									}
-									else{
-										$session_result = mysqli_query($db, "SELECT * FROM t_session");
-										echo '<option data-hidden="true" value="null">Select batch.</option>';
-										while($getSessionArray = mysqli_fetch_array($session_result))
-										{
-											echo "<option value={$getSessionArray['session']}>{$getSessionArray['session']}</option>";
-										}
-									}
-									?>
-						</select><br>
-                        <label>Course : </label><br>
-                        <select class="selectpicker" name="course" data-live-search="true" data-size="10" data-width="50%">
-									<?php
-									if(isset($_POST['button_find']))
-											{
-												$course_code = mysqli_real_escape_string($db, $_POST['course']);
-												if($course_code=="null"||$course_code==null){
-													echo '<option data-hidden="true" value="null">Select course.</option>';
-												}
-												else{
-													$sql="SELECT * FROM courses where course_code like '$course_code'";
-													$result = mysqli_query($db,$sql);
-													$row=mysqli_fetch_array($result,MYSQLI_ASSOC);
-													
-													$courseName=$row['course_name'];												
-													echo "<option value=".$course_code.">".$course_code."\t\t". $courseName."</option>";
-												}
-										}
-									else{
-									echo '<option data-hidden="true" value="null">Select course.</option>';
-									}
-									
-									if(isset($_GET["session_selected"]))
-									{
-										$sessi = $_GET['session_selected'];	
-										
-											$result = mysqli_query($db, "SELECT * FROM courses WHERE session like '$sess'");
-										
-										while($getCourseArray = mysqli_fetch_array($result))
-										{
-											echo "<option value={$getCourseArray['course_code']}>{$getCourseArray['course_code']}\t\t{$getCourseArray['course_name']}</option>";
-										}
-									}
-									?>
-						</select>
+					$output = round($output, 4);
+					echo "<label>Prediction using Linear Regression :  $output</label>"; 
+					
+					echo "<br>";
+					
+					$output1 = shell_exec("\"C:\\xampp\\htdocs\\AcademicPlanner\\R\\R-3.3.1\\bin\\Rscript.exe\" C:/xampp/htdocs/AcademicPlanner/R/R-3.3.1/bin/k/test1.R $gpa");
+					$output1 = round($output1, 4);
+					echo "<label>Prediction using ANN : $output1 </label>"; 
+			}elseif($cat == "math"){
+					$output = shell_exec("\"C:\\xampp\\htdocs\\AcademicPlanner\\R\\R-3.3.1\\bin\\Rscript.exe\" C:/xampp/htdocs/AcademicPlanner/R/R-3.3.1/bin/k/testmath.R $gpa");
+					$output = round($output, 4);
+					echo "<label>Prediction using Linear Regression :  $output</label>"; 
+					echo "<br>";
+					
+					$output1 = shell_exec("\"C:\\xampp\\htdocs\\AcademicPlanner\\R\\R-3.3.1\\bin\\Rscript.exe\" C:/xampp/htdocs/AcademicPlanner/R/R-3.3.1/bin/k/test1math.R $gpa");
+					$output1 = round($output1, 4);
+						echo "<label>Prediction using ANN : $output1 </label>"; 
+			
+			}elseif($cat == "others"){
+						$output = shell_exec("\"C:\\xampp\\htdocs\\AcademicPlanner\\R\\R-3.3.1\\bin\\Rscript.exe\" C:/xampp/htdocs/AcademicPlanner/R/R-3.3.1/bin/k/testother.R $gpa");
+					$output = round($output, 4);
+					echo "<label>Prediction using Linear Regression :  $output</label>"; 
+					echo "<br>";
+					
+					$output1 = shell_exec("\"C:\\xampp\\htdocs\\AcademicPlanner\\R\\R-3.3.1\\bin\\Rscript.exe\" C:/xampp/htdocs/AcademicPlanner/R/R-3.3.1/bin/k/test1math.R $gpa");
+					$output1 = round($output1, 4);
+						echo "<label>Prediction using ANN : $output1 </label>"; 
+			}elseif($cat == "theory"){
+			$output = shell_exec("\"C:\\xampp\\htdocs\\AcademicPlanner\\R\\R-3.3.1\\bin\\Rscript.exe\" C:/xampp/htdocs/AcademicPlanner/R/R-3.3.1/bin/k/testtheory.R $gpa");
+					$output = round($output, 4);
+					echo "<label>Prediction using Linear Regression :  $output</label>"; 
+					echo "<br>";
+					
+					$output1 = shell_exec("\"C:\\xampp\\htdocs\\AcademicPlanner\\R\\R-3.3.1\\bin\\Rscript.exe\" C:/xampp/htdocs/AcademicPlanner/R/R-3.3.1/bin/k/test1theory.R $gpa");
+					$output1 = round($output1, 4);
+						echo "<label>Prediction using ANN : $output1 </label>"; 
+			}else{
+				
+			}
+		
+		}
+	}
+}
+
+
+?>
                         <hr />
-                        <button class="btn btn-info" type="submit" name="button_find"><span class="glyphicon glyphicon-search"></span> Search </button>&nbsp;
+                        
+						<input class="btn btn-info" type="submit" name="Continue" value="Predict"></input>&nbsp;
 						
 						 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"">
                                 <div class="modal-dialog">
@@ -254,61 +288,7 @@ $(window).scroll(function() {
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 											
-											<?php
-											if(isset($_POST['button_find']))
-											{
-												
-												if(isset($course_code)) 
-												{
-								
-													
-													
-                                            echo '<h4 class="modal-title" id="myModalLabel"><i class="fa fa-info-circle fa-lg" aria-hidden="true"></i><b>&nbsp&nbsp&nbsp'.$course_code.'</b> '.$courseName.'</h4>';
-                                        echo '</div>';
-                                        echo '<div class="modal-body">';
-										
-													
-														echo '<table>';
-														echo "<tr>";
-														echo "<th>Credit:</th>";
 											
-														echo "<td>" . $row['credit'] . " credits <br></td>";
-														echo '</tr>';
-											
-														echo "<tr>";
-														echo "<th>Semester Available:</th>";
-											
-														echo "<td>Semester " . $row['semester_available'] . "<br></td>";
-														echo "</tr>";
-											
-														echo "<tr>";
-														echo "<th>Pre-requisite:</th>";
-											
-														if(!$row['pre_requisite']||$row['pre_requisite']="null"){
-															echo"<td>None<br></td>";
-														}
-														else{
-															echo "<td>" . $row['pre_requisite'] . "<br></td>";
-														}
-														echo "</tr>";
-											
-											
-														echo "</table>";
-														
-														echo "<table>";
-														echo "<tr>";
-														echo "<th>Course Info:</th>";
-														echo "</tr>";
-											
-														echo '<tr>';
-														echo "<td>" . $row['course_info'] . "<br></td>";
-														echo "</tr>";
-														echo "</table>";
-													
-											}
-	
-										}
-							?>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -336,7 +316,7 @@ $(window).scroll(function() {
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    &copy; 2016 Academic Project | By : cpyian@siswa.um.edu.my
+                    &copy; 2016 Academic Project | Front-end modified by : Helen Chong
                 </div>
 
             </div>

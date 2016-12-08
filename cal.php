@@ -50,6 +50,7 @@ table {
 
 table, td, th {
    text-align: left;
+    padding: 5px;
 }
 
 td{
@@ -70,11 +71,30 @@ $(document).ready(function(){
 	if (sessionStorage.scrollTop != "undefined") {
 		$(window).scrollTop(sessionStorage.scrollTop);
 	}
+	
+	<?php 
+	if(isset($_POST['button_find'])){
+		 if($_POST['course']=="null"){
+		 ?>
+		setTimeout(function (){swal({html:true,title: "Opps!", text:"Please select course.",type: "warning"}, function(){window.location = "course_info.php";})}, 100);
+	<?php } else{			?>	
+		$('#myModal').modal('show');
+	<?php }} ?>
 });
 
 $(window).scroll(function() {
   sessionStorage.scrollTop = $(this).scrollTop();
 });
+
+   
+   function sessionselect(sessi,second) {
+	   var session_value = sessi.options[sessi.selectedIndex].value;
+	   //var second_value = second.options[second.selectedIndex].value;
+	   //var second = <?php echo(json_encode(isset($_GET["major_selected"]))); ?>;
+
+		window.location.href = "course_info.php?session_selected="+session_value;
+	
+   }
 
 </script>
 </head>
@@ -83,7 +103,7 @@ $(window).scroll(function() {
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    You are logged in as <em style="color:#AED6F1  ;"><?php echo $login_user;?>.</em> (<a href="logout.php" style="color:#AED6F1  ;">Logout?</a>)
+                   You are logged in as <em style="color:#AED6F1  ;"><?php echo $login_user;?></em> (<a href="logout.php" style="color:#AED6F1  ;">Logout?</a>)
                   <!-- &nbsp;&nbsp; -->
                    
                 </div>
@@ -105,7 +125,7 @@ $(window).scroll(function() {
                 </a>
 
             </div>
-			<div class="center-block">
+			
             <div class="left-div">
                 <div class="user-settings-wrapper">
                     <ul class="nav">
@@ -114,15 +134,14 @@ $(window).scroll(function() {
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
                                 <span class="glyphicon glyphicon-education" style="font-size: 25px;"></span>
                             </a>
-                            
+                   
                         </li>
 
 
                     </ul>
                 </div>
             </div>
-			</div>
-        </div>
+		</div>
     </div>
     <!-- LOGO HEADER END-->
     <section class="menu-section">
@@ -132,12 +151,12 @@ $(window).scroll(function() {
                     <div class="navbar-collapse collapse ">
                         <ul id="menu-top" class="nav navbar-nav navbar-right">
 							<li><a href="home.php"><i class="fa fa-home fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Home</a></li>
-                            <li><a class="menu-top-active"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</a></li>
+                            <li><a href="result.php"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</a></li>
 							<li><a href="course_info.php"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbspCourses</a></li>
-                            <li><a href="planner.php"><i class="fa fa-calculator fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Planner</a></li>
+                            <li><a class="planner.php" href="planner.php"><i class="fa fa-calculator fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Planner</a></li>
                             <li><a href="recommendation.php"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Recommendation</a></li>
-							<li><a href="predict.php"><i class="fa fa-flag fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Prediction</a></li>
-                            <li><a href="cal.php"><i class="fa fa-file-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Calculator</a></li>
+							<li><a class="predict.php" href="predict.php"><i class="fa fa-flag fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Prediction</a></li>
+                            <li><a href="menu-top-active"><i class="fa fa-file-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Calculator</a></li>
                             <li><a href="statistic.php"><i class="fa fa-list-alt fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Statistic </a></li>
                         </ul>
                     </div>
@@ -151,7 +170,7 @@ $(window).scroll(function() {
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h4 class="page-head-line"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</h4>
+                    <h4 class="page-head-line"><i class="fa fa-calculator fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbspCalculator</h4>
 
                 </div>
 
@@ -161,153 +180,87 @@ $(window).scroll(function() {
                       <div class="Compose-Message">               
                 <div class="panel panel-info">
                     <div class="panel-heading">
-                        Previous Academic Result
+                        CGPA Calculator 
                     </div>
                     <div class="panel-body">
-					<table>
-					<tr>
-					<th><p>Matric Number</p></th>
-					<td><p>: <?php echo $student_id;?></p><td>
-					</tr>					
-					
-					<tr>
-					<th><p>Major</p></th>
-					<td><p>: <?php echo $major;?></p><td>
-					</tr>
-					
-					<tr>
-					<th><p>CGPA</p></th>
-					<td><p>: 
-					
-					<?php 
-					$sql="SELECT * FROM `results` join `courses` on `courses`.course_code like`results`.course_code where `results`.student_id like '$student_id' order by `results`.session";
-					$result = mysqli_query($db,$sql);
-					$total_credit=0;
-					$total_grade_point=0;
-					while($row = mysqli_fetch_array($result)) {
-					if($row['grade_point']!=null){
-					$total_credit+=$row['credit'];
-					$total_grade_point+=$row['grade_point'];
-					}
-					}
-					$CGPA=round(($total_grade_point/$total_credit),2);
-					mysqli_query($db, "UPDATE `users` SET `cgpa`=$CGPA WHERE username like '$login_user'");
-					printf ("%.2f ",($total_grade_point/$total_credit));
-					?>
-					</p>
-					<td>
-					</tr>
-					<br>
-					
-					<tr>
-					<th><p>Examination Result</p></th>
-					<td><p>:</p><td>
-					</tr>
-					<br>
-					
-					</table>
-					
-					<?php
-					$sql="SELECT * FROM `results` where student_id like '$student_id' order by session";
-					$result = mysqli_query($db,$sql);
-					
-					$sessionArray = array();
-					$i=1;
-					while($row = mysqli_fetch_array($result)){
+						<div class="alert alert-info">
+                            Instruction on using the CGPA calculator <br>
+							1. Enter your current CGPA<br>
+							2. Enter your the number of completed semester(s) <strong>(Do not take in account for internship semester!)</strong><br>
+							3. Either enter your potential GPA for his coming semester or enter your desire cgpa to be achieved at the end of study<br>
+							4. Press Calculate<br>
 							
-							if($i==1){
-								$sessionArray[$i]=$row['session'].",".$row['semester'];
-								$old=$sessionArray[$i];
-								$i=$i+1;
-								//echo "HERE ".$i." HERE";
-							}
-							
-							else{
-								if($row['session'].",".$row['semester']!=$old){
-									$sessionArray[$i]=$row['session'].",".$row['semester'];
-									$old=$sessionArray[$i];
-									$i=$i+1;
-								}
-							}						
-					}
-					
-					$a=1;
-					
-					foreach($sessionArray as $x => $x_value) {
-						
-						$total_credit=0;
-						$total_grade_point=0;
-						
-						$pieces=explode(",",$x_value);
-						 $session1= $pieces[0];
-						 $semester1= $pieces[1];
-						 
-					$sql2="SELECT * FROM `results` 
-							join `courses` on `courses`.course_code like`results`.course_code 
-							where `results`.student_id like '$student_id' AND `results`.session LIKE '$session1' AND `results`.semester = '$semester1'
-							order by `results`.session";
-					$result2 = mysqli_query($db,$sql2);
-					
-					
-					echo "<button type='button' class='btn collapsed' data-toggle='collapse' data-target='#".$a."'>Session $session1 Semester $semester1 </button>";
-					echo "<br><br>";
-					
-					echo "<div id=$a class='collapse'>";
-				
-					//echo "<h3><b>Session $session1 Semester $semester1</b></h3>";
-					
-					echo "<table class='table table-striped table-inverse'><thead class='bg-primary'>
-								<tr>
-									<th>Course Code</th>
-									<th>Course Name</th>
-									<th>Credit</th>
-									<th>Grade</th>
-									<th>Grade Point</th>
-								</tr> </thead><tbody>";
-					
-					while($row2 = mysqli_fetch_array($result2)){
-					
-							echo "<tr>";
-								echo "<td>" . $row2['course_code'] . "</td>";
-								echo "<td>" . $row2['course_name'] . "</td>";
-								echo "<td>" . $row2['credit'] . "</td>";
-								echo "<td>" . $row2['grade'] . "</td>";
-									if($row2['grade_point']==null||$row2['grade']=="S"){
-										echo "<td> - </td>";
-									}
-									else{
-										echo "<td>" . $row2['grade_point'] . "</td>";	
-									}
-							echo "</tr>";
-							
-							if($row2['grade']!="S"){
-								if($row2['grade_point']!=null){
+						</div>
+                       <form action="<?php echo $_SERVER['PHP_SELF']?>" method="post">
+                        <label>Session : </label><br>
+								
+
+								Current CGPA : <input type="number" name="gpa" value="" min="0" max="4" step="0.01" required > 
+								Completed Semester(s) : <input type="number" name="semester" value="" min="0" max="12" required > 
+								<br>
+								<br>
+								Possible GPA : <input type="number" name="pcgpa" value="" onfocus="desire.value=''" step="0.01" min="0" max="4" >     
+								 Desire CGPA : <input type="number" name="desire" value="" onfocus="pcgpa.value=''" step="0.01" min="0" max="4"> 
+								<br>
+								<br>
+
+
+						<?php
+						if ($_SERVER["REQUEST_METHOD"] == "POST") {
+							if(isset($_POST['gpa'], $_POST['semester'], $_POST['Continue'] )){
+								
+								
+								$gpa = $_SESSION["gpa"] =	$_POST["gpa"] ;
+								$semester = $_SESSION["semester"] =	$_POST["semester"] ;
+								$pcgpa = $_SESSION["pcgpa"] =	$_POST["pcgpa"] ;
+									$desire = $_SESSION["desire"] =	$_POST["desire"] ;
+									$hi = $gpa * $semester;
+									$remainingsem = 6 - $semester;
+									$total = 6 * $desire;
+									$you = ($total - $hi)/$remainingsem;
+									$hey = ($hi+$pcgpa)/($semester+1);
+									$hey = round($hey,2);
 									
-								$total_credit+=$row2['credit'];
-								$total_grade_point+=$row2['grade_point'];
-								}
+									if($pcgpa!=""){
+										echo "<label>You CGPA will become $hey</label><br>";
+									}elseif($desire!=""){
+										echo "<label>Averagely you need to obtain a minimum GPA of $you to achieve your desire CGPA </label><br>";
+									}else{
+										echo "You must enter at else one value;";
+									}
+
+
+
+								
 							}
 						}
-							echo "</tbody>";
-							echo "</table>";
-							
-							
-							echo "<table>
-									<tr>
-									<th><p>GPA</p></th>
-									<td><p>: ";
-									printf ("%.2f ",($total_grade_point/$total_credit));
-									echo "</p><td>
-									</tr>
-									</table><br>";
-							$a++;
-							echo "</div>";
-					
-					
-					}
-					
-					?>	
+						?>
 						
+						
+                        <hr />
+
+						<input class="btn btn-info" type="submit" name="Continue" value="Calculate"></input>&nbsp;
+						
+						
+						 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+											
+											
+											
+											
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                        </div>
+								</div>
+                            </div>
+                    </div>
+				</div>
+                    </div>
+					</form>
                      <!--<div class="panel-footer text-muted">
                         <strong>Note : </strong>Please note that we track all messages so don't send any spams.
                     </div> -->
@@ -317,7 +270,7 @@ $(window).scroll(function() {
 
             </div>
             
-			 </div>
+
         </div>
     </div>
     <!-- CONTENT-WRAPPER SECTION END-->
@@ -325,7 +278,7 @@ $(window).scroll(function() {
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    &copy; 2016 Academic Project | By : cpyian@siswa.um.edu.my
+                    &copy; 2016 Academic Project | Front-end modified by : Helen Chong
                 </div>
 
             </div>

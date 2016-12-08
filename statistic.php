@@ -3,6 +3,7 @@
 	mysqli_query($db, "DELETE FROM `temp` WHERE username like '$login_user'");
 	unset($semester);
 	unset($session);
+
 	
 ?>
 <!DOCTYPE html>
@@ -39,6 +40,9 @@
     <script src="sweetalert-master/dist/sweetalert.min.js"></script> 
 	<link rel="stylesheet" type="text/css" href="sweetalert-master/dist/sweetalert.css"/>
 	
+	<link rel="stylesheet" href="star/css/star-rating.css" media="all" rel="stylesheet" type="text/css"/>
+  <script src="star/js/star-rating.js" type="text/javascript"></script> 
+	
 	
 	<style>
 	
@@ -50,6 +54,7 @@ table {
 
 table, td, th {
    text-align: left;
+    padding: 5px;
 }
 
 td{
@@ -66,15 +71,29 @@ td{
 </style>
 <script>
 $(document).ready(function(){
+	<?php 
+	if(!empty($_GET)&&!isset($_GET["major_selected"])){
+		 ?>
+		$('#myModal').modal('show');
+	<?php } ?>
+	
     $('[data-toggle="tooltip"]').tooltip();
 	if (sessionStorage.scrollTop != "undefined") {
 		$(window).scrollTop(sessionStorage.scrollTop);
 	}
+	
 });
 
 $(window).scroll(function() {
   sessionStorage.scrollTop = $(this).scrollTop();
 });
+
+function majorselect(mjr) {
+	   var mjr_value = mjr.options[mjr.selectedIndex].value;
+	  
+		window.location.href = "recommendation.php?major_selected="+mjr_value;
+	
+   }
 
 </script>
 </head>
@@ -83,7 +102,7 @@ $(window).scroll(function() {
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    You are logged in as <em style="color:#AED6F1  ;"><?php echo $login_user;?>.</em> (<a href="logout.php" style="color:#AED6F1  ;">Logout?</a>)
+                   You are logged in as <em style="color:#AED6F1  ;"><?php echo $login_user;?>.</em> (<a href="logout.php" style="color:#AED6F1  ;">Logout?</a>)
                   <!-- &nbsp;&nbsp; -->
                    
                 </div>
@@ -105,7 +124,7 @@ $(window).scroll(function() {
                 </a>
 
             </div>
-			<div class="center-block">
+
             <div class="left-div">
                 <div class="user-settings-wrapper">
                     <ul class="nav">
@@ -114,14 +133,13 @@ $(window).scroll(function() {
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
                                 <span class="glyphicon glyphicon-education" style="font-size: 25px;"></span>
                             </a>
-                            
+
                         </li>
 
 
                     </ul>
                 </div>
             </div>
-			</div>
         </div>
     </div>
     <!-- LOGO HEADER END-->
@@ -132,11 +150,11 @@ $(window).scroll(function() {
                     <div class="navbar-collapse collapse ">
                         <ul id="menu-top" class="nav navbar-nav navbar-right">
 							<li><a href="home.php"><i class="fa fa-home fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Home</a></li>
-                            <li><a class="menu-top-active"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</a></li>
+                            <li><a href="result.php"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</a></li>
 							<li><a href="course_info.php"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbspCourses</a></li>
-                            <li><a href="planner.php"><i class="fa fa-calculator fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Planner</a></li>
+                            <li><a class="planner.php" href="planner.php"><i class="fa fa-calculator fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Planner</a></li>
                             <li><a href="recommendation.php"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Recommendation</a></li>
-							<li><a href="predict.php"><i class="fa fa-flag fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Prediction</a></li>
+							<li><a class="predict.php" href="predict.php"><i class="fa fa-flag fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Prediction</a></li>
                             <li><a href="cal.php"><i class="fa fa-file-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Calculator</a></li>
                             <li><a href="statistic.php"><i class="fa fa-list-alt fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Statistic </a></li>
                         </ul>
@@ -151,7 +169,7 @@ $(window).scroll(function() {
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h4 class="page-head-line"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</h4>
+                    <h4 class="page-head-line"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Statistic</h4>
 
                 </div>
 
@@ -161,153 +179,70 @@ $(window).scroll(function() {
                       <div class="Compose-Message">               
                 <div class="panel panel-info">
                     <div class="panel-heading">
-                        Previous Academic Result
+                        Result Statistic
                     </div>
                     <div class="panel-body">
-					<table>
-					<tr>
-					<th><p>Matric Number</p></th>
-					<td><p>: <?php echo $student_id;?></p><td>
-					</tr>					
+
+						<div class="alert alert-info">
+                            Instruction to generate a statistic view of certain subject of previous batch<br>
+							1. Select the subject<br>
+							2. Press Output<br>
 					
-					<tr>
-					<th><p>Major</p></th>
-					<td><p>: <?php echo $major;?></p><td>
-					</tr>
+							
+						</div>
+
+						
+
 					
-					<tr>
-					<th><p>CGPA</p></th>
-					<td><p>: 
-					
-					<?php 
-					$sql="SELECT * FROM `results` join `courses` on `courses`.course_code like`results`.course_code where `results`.student_id like '$student_id' order by `results`.session";
-					$result = mysqli_query($db,$sql);
-					$total_credit=0;
-					$total_grade_point=0;
-					while($row = mysqli_fetch_array($result)) {
-					if($row['grade_point']!=null){
-					$total_credit+=$row['credit'];
-					$total_grade_point+=$row['grade_point'];
-					}
-					}
-					$CGPA=round(($total_grade_point/$total_credit),2);
-					mysqli_query($db, "UPDATE `users` SET `cgpa`=$CGPA WHERE username like '$login_user'");
-					printf ("%.2f ",($total_grade_point/$total_credit));
-					?>
-					</p>
-					<td>
-					</tr>
-					<br>
-					
-					<tr>
-					<th><p>Examination Result</p></th>
-					<td><p>:</p><td>
-					</tr>
-					<br>
-					
-					</table>
-					
+					<div class="col-lg-2">
+						<label><p>Subject : </p></label>
 					<?php
-					$sql="SELECT * FROM `results` where student_id like '$student_id' order by session";
-					$result = mysqli_query($db,$sql);
+// poorman.php
+ 
+echo "<form action='statistic.php' method='get'>";
+//echo "Number values to generate: <input type='number' name='N' />";
+?>
+
+<select id="myForm" action="" class="selectpicker" name="N" data-live-search="false" data-size="10" data-width="200%">
+										
+										<option value="1">Advance Programming</option>
+										<option value="2">Software Validation and Verification</option>
+										<option value="3">Software Process and Metric</option>
+										
+								</select>
+								<br>
+			<?php
+			echo "<br>";
+echo '<input class="btn btn-info" type="submit" value="Output"></input>&nbsp;';
+
+
+echo "</form>";
+ 
+if(isset($_GET['N']))
+{
+  $N = $_GET['N'];
+ 
+
+  // execute R script from shell
+  // this will save a plot at temp.png to the filesystem
+  exec(".\R\R-3.3.1\bin\Rscript.exe .\R\R-3.3.1\bin\k\my_rscript.R $N");
+  //exec(".\R\R-3.3.1\bin\Rscript .\R\R-3.3.1\bin\multiple_regression.R $w_currentCGPA $w_interest $w_prediction $w_difficulty"); 
+ 
+  // return image tag
+  $nocache = rand();
+  echo("<img src='temp.png?$nocache' />");
+}
+?>
 					
-					$sessionArray = array();
-					$i=1;
-					while($row = mysqli_fetch_array($result)){
-							
-							if($i==1){
-								$sessionArray[$i]=$row['session'].",".$row['semester'];
-								$old=$sessionArray[$i];
-								$i=$i+1;
-								//echo "HERE ".$i." HERE";
-							}
-							
-							else{
-								if($row['session'].",".$row['semester']!=$old){
-									$sessionArray[$i]=$row['session'].",".$row['semester'];
-									$old=$sessionArray[$i];
-									$i=$i+1;
-								}
-							}						
-					}
-					
-					$a=1;
-					
-					foreach($sessionArray as $x => $x_value) {
+					</div>
+					<div class="clearfix"></div>
+					<br>
+					<div class="col-lg-10">
+		
+			</div>
+			</form>
 						
-						$total_credit=0;
-						$total_grade_point=0;
-						
-						$pieces=explode(",",$x_value);
-						 $session1= $pieces[0];
-						 $semester1= $pieces[1];
-						 
-					$sql2="SELECT * FROM `results` 
-							join `courses` on `courses`.course_code like`results`.course_code 
-							where `results`.student_id like '$student_id' AND `results`.session LIKE '$session1' AND `results`.semester = '$semester1'
-							order by `results`.session";
-					$result2 = mysqli_query($db,$sql2);
 					
-					
-					echo "<button type='button' class='btn collapsed' data-toggle='collapse' data-target='#".$a."'>Session $session1 Semester $semester1 </button>";
-					echo "<br><br>";
-					
-					echo "<div id=$a class='collapse'>";
-				
-					//echo "<h3><b>Session $session1 Semester $semester1</b></h3>";
-					
-					echo "<table class='table table-striped table-inverse'><thead class='bg-primary'>
-								<tr>
-									<th>Course Code</th>
-									<th>Course Name</th>
-									<th>Credit</th>
-									<th>Grade</th>
-									<th>Grade Point</th>
-								</tr> </thead><tbody>";
-					
-					while($row2 = mysqli_fetch_array($result2)){
-					
-							echo "<tr>";
-								echo "<td>" . $row2['course_code'] . "</td>";
-								echo "<td>" . $row2['course_name'] . "</td>";
-								echo "<td>" . $row2['credit'] . "</td>";
-								echo "<td>" . $row2['grade'] . "</td>";
-									if($row2['grade_point']==null||$row2['grade']=="S"){
-										echo "<td> - </td>";
-									}
-									else{
-										echo "<td>" . $row2['grade_point'] . "</td>";	
-									}
-							echo "</tr>";
-							
-							if($row2['grade']!="S"){
-								if($row2['grade_point']!=null){
-									
-								$total_credit+=$row2['credit'];
-								$total_grade_point+=$row2['grade_point'];
-								}
-							}
-						}
-							echo "</tbody>";
-							echo "</table>";
-							
-							
-							echo "<table>
-									<tr>
-									<th><p>GPA</p></th>
-									<td><p>: ";
-									printf ("%.2f ",($total_grade_point/$total_credit));
-									echo "</p><td>
-									</tr>
-									</table><br>";
-							$a++;
-							echo "</div>";
-					
-					
-					}
-					
-					?>	
-						
                      <!--<div class="panel-footer text-muted">
                         <strong>Note : </strong>Please note that we track all messages so don't send any spams.
                     </div> -->
@@ -317,15 +252,16 @@ $(window).scroll(function() {
 
             </div>
             
-			 </div>
+		</div>
         </div>
     </div>
+	
     <!-- CONTENT-WRAPPER SECTION END-->
     <footer>
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    &copy; 2016 Academic Project | By : cpyian@siswa.um.edu.my
+                    &copy; 2016 Academic Project | Front-end modified by : Helen Chong
                 </div>
 
             </div>
@@ -334,8 +270,6 @@ $(window).scroll(function() {
     <!-- FOOTER SECTION END-->
     <!-- JAVASCRIPT AT THE BOTTOM TO REDUCE THE LOADING TIME  -->
     <!-- CORE JQUERY SCRIPTS -->
-	
-   
 	
 </body>
 </html>

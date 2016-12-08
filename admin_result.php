@@ -4,6 +4,7 @@
 	unset($semester);
 	unset($session);
 	
+	
 		if(isset($_POST['button_upload'])){
 		
 			if(!isset($_GET['session_upload'])||$_POST['semester_upload']=="null"){
@@ -61,12 +62,26 @@
 
 	}
 
-if(isset($_POST['delete_result'])) {
+if(isset($_POST['button_delete'])) {
+	
+	//$errors = array_filter($checkbox);
+	if(!empty($_POST["checkbox"])){
+	 $checkbox=$_POST["checkbox"];
+	}else{
+		$checkbox=null;
+	}
+	//echo $checkbox;
+	if(count($checkbox) <1){
+			echo '<script type="text/javascript">';
+			echo 'setTimeout(function (){swal({html:true,title: "Opps!", text:"Please select a record of results.",type: "warning"}, function(){window.location = "admin_result.php";})}, 50);';
+			echo '</script>';
+		}
+		else{
 ?>
 	<script type="text/javascript">
 	
 			setTimeout(function (){swal({
-			title: "Delete this record?", 
+			title: "Delete these record?", 
 			type: "warning",
 			showCancelButton: true,
 			confirmButtonColor: "#DD6B55",
@@ -83,13 +98,12 @@ if(isset($_POST['delete_result'])) {
 				else
 				{
 					
-					<?php $result_id = mysqli_real_escape_string($db, $_POST['delete_result']); ?>
-					var result_id=<?php echo json_encode($result_id); ?>;
+					var del_id=<?php echo json_encode($checkbox); ?>;
 					
 					$.ajax({
 							url: "delete.php",
 							type: "POST",
-							data: {result_id1:result_id}
+							data: {result_id1:del_id}
 							});
 						
 					setTimeout(function (){swal({title: "Success!", text:"Record deleted.", type: "success"}, function(){window.location = "admin_result.php";})}, 100);
@@ -97,7 +111,7 @@ if(isset($_POST['delete_result'])) {
 		</script>
 	
 <?php	
-}
+}}
 ?>	
 	
 <!DOCTYPE html>
@@ -252,7 +266,7 @@ $(window).scroll(function() {
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">
+                <a class="navbar-brand" href="">
                      <img src="assets/img/try.png" />
                 </a>
 
@@ -413,17 +427,19 @@ $(window).scroll(function() {
 						
 				
 					//echo "<h3><b>Session $session1 Semester $semester1</b></h3>";
-					
+					echo '<div style="height:300px;overflow:auto;">';
 					echo "<table class='table table-striped table-inverse'><thead class='bg-primary'>
 								<tr>
+								<th></th>
 									<th>No</th>
 									<th>Student id</th>
 									<th>Grade</th>
 								</tr> </thead><tbody>";
 					
 					while($row2 = mysqli_fetch_array($result2)){
-					
+					$rslt_id=$row2['result_id'];
 							echo "<tr>";
+								echo "<td><input type='checkbox' name='checkbox[]'  value='" . $rslt_id . "'></td>";
 								echo "<td>" . $a . "</td>";
 								echo "<td>" . $row2['student_id'] . "</td>";
 								echo "<td>" . $row2['grade'] . "</td>";
@@ -446,6 +462,7 @@ $(window).scroll(function() {
 						}
 							echo "</tbody>";
 							echo "</table>";
+							echo "</div>";
 							
 						
 						}
@@ -455,8 +472,12 @@ $(window).scroll(function() {
 							echo 'setTimeout(function (){swal({html:true,title: "Opps!", text:"Please select course.",type: "warning"}, function(){window.location = "admin_result.php";})}, 100);';
 							echo '</script>';
 						}
+						echo '<hr/>';
+						echo '<button class="btn btn-danger" type="submit" name="button_delete"><i class="fa fa-trash" aria-hidden="true"></i>&nbsp&nbsp Delete</button>&nbsp;';
 					}
 					?>
+					
+					
 					</form>
 					
 					</div>

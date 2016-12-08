@@ -303,7 +303,7 @@ function majorselect(maj,second) {
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">
+                <a class="navbar-brand" href="">
                      <img src="assets/img/try.png" />
                 </a>
 
@@ -362,7 +362,7 @@ function majorselect(maj,second) {
                     </div>
                     <div class="panel-body">
                         <form method="post">
-                        <label>Session : </label><br>
+                        <label>Batch : </label><br>
 									<?php
 			
 										echo '<select class="selectpicker" name="session" data-live-search="true" data-size="10" data-width="25%" onchange="javascript:sessionselect(this,0)">';
@@ -371,7 +371,7 @@ function majorselect(maj,second) {
 									{
 										$sess = $_GET['session_selected'];
 										$session_result = mysqli_query($db, "SELECT * FROM t_session");
-										echo '<option data-hidden="true" value=$sess>Session '.$sess.'</option>';
+										echo '<option data-hidden="true" value=$sess>Batch '.$sess.'</option>';
 										while($getSessionArray = mysqli_fetch_array($session_result))
 										{
 											echo "<option value={$getSessionArray['session']}>{$getSessionArray['session']}</option>";
@@ -379,7 +379,7 @@ function majorselect(maj,second) {
 									}
 									else{
 										$session_result = mysqli_query($db, "SELECT * FROM t_session");
-										echo '<option data-hidden="true" value="null">Select session.</option>';
+										echo '<option data-hidden="true" value="null">Select batch.</option>';
 										while($getSessionArray = mysqli_fetch_array($session_result))
 										{
 											echo "<option value={$getSessionArray['session']}>{$getSessionArray['session']}</option>";
@@ -582,13 +582,13 @@ function majorselect(maj,second) {
                     </div>
                     <div class="panel-body">
                         <form name="import" method="post" enctype="multipart/form-data">
-                        <label>Session : </label><br>
+                        <label>Batch : </label><br>
 									<?php
 			
 										echo '<select class="selectpicker" name="session_upload" data-live-search="true" data-size="10" data-width="25%">';
 									
 										$session_result = mysqli_query($db, "SELECT * FROM t_session");
-										echo '<option data-hidden="true" value="null">Select session.</option>';
+										echo '<option data-hidden="true" value="null">Select batch.</option>';
 										while($getSessionArray = mysqli_fetch_array($session_result))
 										{
 											echo "<option value={$getSessionArray['session']}>{$getSessionArray['session']}</option>";

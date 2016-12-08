@@ -5,77 +5,84 @@
 	unset($session);
 	
 		if(isset($_POST['button_add']))
-{
-	$course = mysqli_real_escape_string($db, $_POST['course']);
-	$grade_point = mysqli_real_escape_string($db, $_POST['grade']);
+		{
+			if(isset($_GET[session_selected])){
+				
+				$ss=$_GET[session_selected];
+			}
+			else{
+				$ss="null";
+			}
+			$course = mysqli_real_escape_string($db, $_POST['course']);
+			$grade_point = mysqli_real_escape_string($db, $_POST['grade']);
 
-	 $_SESSION['course'] = $course;
-	if($course== "null"||$grade_point=="null") {
-		if($course== "null"){
-			echo '<script type="text/javascript">';
-			echo 'setTimeout(function (){swal({html:true,title: "Opps!", text:"Please select a course",type: "warning"}, function(){window.location = "planner.php?session_selected='.$_GET[session_selected].'";})}, 100);';
-			echo '</script>';
-			
+			 $_SESSION['course'] = $course;
+			if($course== "null"||$grade_point=="null") {
+				if($course== "null"){
+					echo '<script type="text/javascript">';
+					echo 'setTimeout(function (){swal({html:true,title: "Opps!", text:"Please select a course",type: "warning"}, function(){window.location = "planner.php?session_selected='.$ss.'";})}, 100);';
+					echo '</script>';
+					
+				}
+				else{ 			
+					echo '<script type="text/javascript">';
+					echo 'setTimeout(function (){swal({html:true,title: "Opps!", text:"Please select a grade",type: "warning"}, function(){window.location = "planner.php?session_selected='.$ss.'";})}, 100);';
+					echo '</script>';
+				}
+				
+			}
+			else{
+				
+				$sql="SELECT * FROM `temp` where username like '$login_user' and course_code like '$course'";
+				$result = mysqli_query($db,$sql);
+				if (mysqli_num_rows($result)){
+					
+					echo '<script type="text/javascript">';
+					echo 'setTimeout(function (){swal({html:true,title: "Opps!", text:"Course already been added.",type: "warning"}, function(){window.location = "planner.php?session_selected='.$ss.'";})}, 100);';
+					echo '</script>';
+				}
+				
+				else{
+					if($grade_point==4){
+				mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','A+/A','$grade_point')");
+					}
+					else if($grade_point==3.7){
+				mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','A-','$grade_point')");
+					}
+					else if($grade_point==3.3){
+				mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','B+','$grade_point')");
+					}
+					else if($grade_point==3.0){
+				mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','B','$grade_point')");
+					}
+					else if($grade_point==2.7){
+				mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','B-','$grade_point')");
+					}
+					else if($grade_point==2.3){
+				mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','C+','$grade_point')");
+					}
+					else if($grade_point==2.0){
+				mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','C','$grade_point')");
+					}
+					else if($grade_point==1.7){
+				mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','C-','$grade_point')");
+					}
+					else if($grade_point==1.3){
+				mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','D+','$grade_point')");
+					}
+					else if($grade_point==1.0){
+				mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','D','$grade_point')");
+					}
+					else if($grade_point==0){
+				mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','F','$grade_point')");
+					}
+				echo '<script type="text/javascript">';
+					echo 'setTimeout(function (){swal({html:true,title: "Good Job!", text:"Course added.",type: "success"}, function(){window.location = "planner.php?session_selected='.$ss.'";})}, 100);';
+					echo '</script>';
+				
+				}
+			}
 		}
-		else{ 			
-			echo '<script type="text/javascript">';
-			echo 'setTimeout(function (){swal({html:true,title: "Opps!", text:"Please select a grade",type: "warning"}, function(){window.location = "planner.php?session_selected='.$_GET[session_selected].'";})}, 100);';
-			echo '</script>';
-		}
-		
-	}
-	else{
-		
-		$sql="SELECT * FROM `temp` where username like '$login_user' and course_code like '$course'";
-		$result = mysqli_query($db,$sql);
-		if (mysqli_num_rows($result)){
-			
-			echo '<script type="text/javascript">';
-			echo 'setTimeout(function (){swal({html:true,title: "Opps!", text:"Course already been added.",type: "warning"}, function(){window.location = "planner.php?session_selected='.$_GET[session_selected].'";})}, 100);';
-			echo '</script>';
-		}
-		
-		else{
-			if($grade_point==4){
-		mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','A+/A','$grade_point')");
-			}
-			else if($grade_point==3.7){
-		mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','A-','$grade_point')");
-			}
-			else if($grade_point==3.3){
-		mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','B+','$grade_point')");
-			}
-			else if($grade_point==3.0){
-		mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','B','$grade_point')");
-			}
-			else if($grade_point==2.7){
-		mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','B-','$grade_point')");
-			}
-			else if($grade_point==2.3){
-		mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','C+','$grade_point')");
-			}
-			else if($grade_point==2.0){
-		mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','C','$grade_point')");
-			}
-			else if($grade_point==1.7){
-		mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','C-','$grade_point')");
-			}
-			else if($grade_point==1.3){
-		mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','D+','$grade_point')");
-			}
-			else if($grade_point==1.0){
-		mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','D','$grade_point')");
-			}
-			else if($grade_point==0){
-		mysqli_query($db, "INSERT INTO temp (username, course_code,grade,grade_point) VALUES ('$login_user','$course','F','$grade_point')");
-			}
-		echo '<script type="text/javascript">';
-			echo 'setTimeout(function (){swal({html:true,title: "Good Job!", text:"Course added.",type: "success"}, function(){window.location = "planner.php?session_selected='.$_GET[session_selected].'";})}, 100);';
-			echo '</script>';
-		
-		}
-	}
-}
 	
 if(isset($_POST['button_activate'])) {
 	
@@ -217,7 +224,7 @@ $(window).scroll(function() {
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">
+                <a class="navbar-brand">
                      <img src="assets/img/try.png" />
                 </a>
 
@@ -252,6 +259,9 @@ $(window).scroll(function() {
 							<li><a href="course_info.php"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbspCourses</a></li>
                             <li><a class="menu-top-active" href="planner.php"><i class="fa fa-calculator fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Planner</a></li>
                             <li><a href="recommendation.php"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Recommendation</a></li>
+							<li><a href="predict.php"><i class="fa fa-flag fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Prediction</a></li>
+                            <li><a href="cal.php"><i class="fa fa-file-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Calculator</a></li>
+                            <li><a href="statistic.php"><i class="fa fa-list-alt fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Statistic </a></li>
                         </ul>
                     </div>
                 </div>
@@ -288,7 +298,7 @@ $(window).scroll(function() {
 									{
 										$sess = $_GET['session_selected'];
 										$session_result = mysqli_query($db, "SELECT * FROM t_session");
-										echo '<option data-hidden="true" value=$sess>Session '.$sess.'</option>';
+										echo '<option data-hidden="true" value=$sess>Batch '.$sess.'</option>';
 										while($getSessionArray = mysqli_fetch_array($session_result))
 										{
 											echo "<option value={$getSessionArray['session']}>{$getSessionArray['session']}</option>";

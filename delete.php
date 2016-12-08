@@ -1,6 +1,6 @@
 <?php
 include('check.php');
-session_start();
+//session_start();
 if(isset($_GET['id']))
 {
 $course_code=$_GET['id'];
@@ -48,8 +48,13 @@ $query1=mysqli_query($db,"delete from temp where course_code='$deleteCourse'");
 
 if(isset($_POST['result_id1']))
 {
-$result_id1=$_POST['result_id'];
-$query1=mysqli_query($db,"delete from result where result_id='$result_id'");
+$result_id1=$_POST['result_id1'];
+$count=count($result_id1);
+
+for($i=0;$i<$count;$i++){
+$del_id = $result_id1[$i];
+$query1=mysqli_query($db,"delete from results where result_id='$del_id'");
+}
 
 }
 

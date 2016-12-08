@@ -129,18 +129,24 @@ $(window).scroll(function() {
                 <div class="col-md-12">
                     <div class="navbar-collapse collapse ">
                         <ul id="menu-top" class="nav navbar-nav navbar-right">
-						<?php
-						if(!isset($login_user)){
-                            echo '<li><a class="menu-top-active" href="#about"><i class="fa fa-home fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Home</a></li>';
-						}
-						else{
-							echo '<li><a class="menu-top-active" href="home.php"><i class="fa fa-home fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Home</a></li>';
-                            echo '<li><a href="result.php"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</a></li>';
-							echo '<li><a href="course_info.php"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbspCourses</a></li>';
-                            echo '<li><a href="planner.php"><i class="fa fa-calculator fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Planner</a></li>';
-                            echo '<li><a href="recommendation.php"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Recommendation</a></li>';
-						}
-						?>
+						
+							<li><a class="menu-top-active" href="home.php"><i class="fa fa-home fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Home</a></li>
+                            <li><a href="result.php"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Result</a></li>
+							<li><a href="course_info.php"><i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbspCourses</a></li>
+                            <li><a href="planner.php"><i class="fa fa-calculator fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Planner</a></li>
+                            <li><a href="recommendation.php"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Recommendation</a></li>
+							<li><a href="predict.php"><i class="fa fa-flag fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Prediction</a></li>
+                            <li><a href="cal.php"><i class="fa fa-file-o fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Calculator</a></li>
+                            <li><a href="statistic.php"><i class="fa fa-list-alt fa-lg" aria-hidden="true"></i>&nbsp&nbsp&nbsp Statistic</a></li>
+						
+						
+						
+						
+						
+						
+						
+						
+						
                         </ul>
                     </div>
                 </div>
@@ -167,10 +173,10 @@ $(window).scroll(function() {
                         <!-- Wrapper for slides -->
                         <div class="carousel-inner">
                             <div class="item active">
-                                <a href="planner.php"><img class="img-responsive img-full" src="img/slide-1.jpg" alt="">
+                                <a href="recommendation.php"><img class="img-responsive img-full" src="img/slide-1.jpg" alt="">
 								<div class="carousel-caption">
-								<h4>Planner</h4>
-								<p style="color:white; font-size:100%;">Offer the best recommendation of minimum expected grade to be achieved based on the student’s current CGPA </p>
+								<h4>Recommendation</h4>
+								<p style="color:white; font-size:100%;">Offer the best recommendation of academic path to the students </p>
 							</div>
                             </div>
                             <div class="item">
@@ -181,10 +187,10 @@ $(window).scroll(function() {
 							</div>
                             </div>
                             <div class="item">
-                                <a href="target.php"><img class="img-responsive img-full" src="img/slide-3.jpg" alt="">
+                                <a href="planner.php"><img class="img-responsive img-full" src="img/slide-3.jpg" alt="">
 								<div class="carousel-caption">
-								<h4>Target</h4>
-								<p style="color:white;font-size:100%;">Help students to set the target grades of courses for all semester.</p>
+								<h4>Planner</h4>
+								<p style="color:white;font-size:100%;">Assist students in calculating their CGPA.</p>
 							</div>
                             </div>
                         </div>
